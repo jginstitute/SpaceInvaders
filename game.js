@@ -3,6 +3,7 @@ let canvas, ctx;
 let player, enemies, bullets, powerUps;
 let gameLoop, gameState;
 let score = 0;
+let keys = {};
 
 // Game states
 const GAME_STATE = {
@@ -75,15 +76,58 @@ function update() {
 
 // Game object update functions
 function updatePlayer() {
-    // Player movement logic here
+    if (keys.ArrowLeft && player.x > 0) {
+        player.x -= player.speed;
+    }
+    if (keys.ArrowRight && player.x < canvas.width - player.width) {
+        player.x += player.speed;
+    }
 }
 
 function updateEnemies() {
-    // Enemy movement and spawning logic here
+    if (enemies.length === 0) {
+        spawnEnemies();
+    }
+
+    enemies.forEach(enemy => {
+        enemy.y += enemy.speed;
+        if (enemy.y > canvas.height) {
+            enemies = enemies.filter(e => e !== enemy);
+        }
+    });
+}
+
+function spawnEnemies() {
+    for (let i = 0; i < 5; i++) {
+        for (let j = 0; j < 8; j++) {
+            enemies.push({
+                x: j * 80 + 50,
+                y: i * 50 + 30,
+                width: 40,
+                height: 30,
+                speed: 0.5
+            });
+        }
+    }
 }
 
 function updateBullets() {
-    // Bullet movement and removal logic here
+    bullets.forEach(bullet => {
+        bullet.y -= bullet.speed;
+        if (bullet.y < 0) {
+            bullets = bullets.filter(b => b !== bullet);
+        }
+    });
+}
+
+function fireBullet() {
+    bullets.push({
+        x: player.x + player.width / 2 - 2,
+        y: player.y,
+        width: 4,
+        height: 10,
+        speed: 7
+    });
 }
 
 function updatePowerUps() {
@@ -102,11 +146,17 @@ function renderPlayer() {
 }
 
 function renderEnemies() {
-    // Render enemies here
+    ctx.fillStyle = '#f00';
+    enemies.forEach(enemy => {
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+    });
 }
 
 function renderBullets() {
-    // Render bullets here
+    ctx.fillStyle = '#fff';
+    bullets.forEach(bullet => {
+        ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+    });
 }
 
 function renderPowerUps() {
@@ -115,11 +165,14 @@ function renderPowerUps() {
 
 // Input handling
 function handleKeyDown(e) {
-    // Key down logic here
+    keys[e.code] = true;
+    if (e.code === 'Space' && gameState === GAME_STATE.PLAYING) {
+        fireBullet();
+    }
 }
 
 function handleKeyUp(e) {
-    // Key up logic here
+    keys[e.code] = false;
 }
 
 // Game state functions
