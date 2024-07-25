@@ -7,8 +7,9 @@ let level = 1;
 let lives = 3;
 let keys = {};
 
-// Sound effects
-let shootSound, explosionSound, powerUpSound;
+// Web Audio
+let audioContext;
+let shootBuffer, explosionBuffer, powerUpBuffer;
 
 // Game states
 const GAME_STATE = {
@@ -39,10 +40,11 @@ function init() {
     bullets = [];
     powerUps = [];
 
-    // Load sound effects
-    shootSound = new Audio('shoot.wav');
-    explosionSound = new Audio('explosion.wav');
-    powerUpSound = new Audio('powerup.wav');
+    // Initialize Web Audio
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    loadSound('shoot.wav', buffer => shootBuffer = buffer);
+    loadSound('explosion.wav', buffer => explosionBuffer = buffer);
+    loadSound('powerup.wav', buffer => powerUpBuffer = buffer);
 
     // Event listeners
     document.addEventListener('keydown', handleKeyDown);
@@ -161,7 +163,23 @@ function fireBullet() {
         height: 10,
         speed: 7
     });
-    shootSound.play();
+    playSound(shootBuffer);
+}
+
+function loadSound(url, callback) {
+    fetch(url)
+        .then(response => response.arrayBuffer())
+        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+        .then(audioBuffer => callback(audioBuffer))
+        .catch(error => console.error('Error loading sound:', error));
+}
+
+function playSound(buffer) {
+    if (!buffer) return;
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.start();
 }
 
 function updatePowerUps() {
@@ -209,7 +227,7 @@ function checkCollisions() {
                 if (enemy.health <= 0) {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
-                    explosionSound.play();
+                    playSound(explosionBuffer);
                 }
             }
         });
@@ -244,7 +262,7 @@ function checkCollisions() {
         if (isColliding(player, powerUp)) {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
-            powerUpSound.play();
+            playSound(powerUpBuffer);
         }
     });
 }
