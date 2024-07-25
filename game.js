@@ -7,6 +7,9 @@ let level = 1;
 let lives = 3;
 let keys = {};
 
+// Audio elements
+let shootSound, explosionSound, powerupSound;
+
 
 // Game states
 const GAME_STATE = {
@@ -23,6 +26,11 @@ function init() {
     canvas.height = 600;
 
     gameState = GAME_STATE.START;
+
+    // Initialize audio elements
+    shootSound = document.getElementById('shoot-sound');
+    explosionSound = document.getElementById('explosion-sound');
+    powerupSound = document.getElementById('powerup-sound');
 
     // Initialize game objects
     player = {
@@ -156,7 +164,7 @@ function fireBullet() {
         height: 10,
         speed: 7
     });
-    // Sound effect for shooting (removed)
+    shootSound.play();
 }
 
 
@@ -205,7 +213,7 @@ function checkCollisions() {
                 if (enemy.health <= 0) {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
-                    // Sound effect for explosion (removed)
+                    explosionSound.play();
                 }
             }
         });
@@ -240,7 +248,7 @@ function checkCollisions() {
         if (isColliding(player, powerUp)) {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
-            // Sound effect for power-up (removed)
+            powerupSound.play();
         }
     });
 }
