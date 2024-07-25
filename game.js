@@ -104,18 +104,7 @@ function updateEnemies() {
 
     enemies.forEach(enemy => {
         enemy.y += enemy.speed;
-        
-        // Calculate the sine wave movement
-        let sineWave = Math.sin(enemy.y * 0.1) * 2;
-        
-        // Calculate the new x position
-        let newX = enemy.x + sineWave;
-        
-        // Constrain the enemy within the canvas boundaries
-        newX = Math.max(0, Math.min(newX, canvas.width - enemy.width));
-        
-        // Update the enemy's x position
-        enemy.x = newX;
+        enemy.x += Math.sin(enemy.y * 0.1) * 2; // Sine wave movement
 
         if (enemy.y > canvas.height) {
             enemies = enemies.filter(e => e !== enemy);
