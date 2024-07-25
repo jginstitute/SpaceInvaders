@@ -78,12 +78,10 @@ function update() {
         renderBullets();
         renderPowerUps();
 
-        // Render score, level, and lives
-        ctx.fillStyle = '#fff';
-        ctx.font = '20px Arial';
-        ctx.fillText(`Score: ${score}`, 10, 30);
-        ctx.fillText(`Level: ${level}`, 10, 60);
-        ctx.fillText(`Lives: ${lives}`, 10, 90);
+        // Update game info
+        document.getElementById('score').textContent = `Score: ${score}`;
+        document.getElementById('level').textContent = `Level: ${level}`;
+        document.getElementById('lives').textContent = `Lives: ${lives}`;
     }
 
     gameLoop = requestAnimationFrame(update);
