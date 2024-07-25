@@ -307,15 +307,21 @@ window.addEventListener('load', () => {
     const alienSvg = document.getElementById('alien');
     if (alienSvg) {
         console.log('Alien SVG element found');
-        const svgString = alienSvg.outerHTML;
+        const svgString = new XMLSerializer().serializeToString(alienSvg);
         console.log('SVG string:', svgString);
-        const dataUrl = 'data:image/svg+xml,' + encodeURIComponent(svgString);
+        const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgString);
         console.log('Data URL created');
         alienImage.src = dataUrl;
     } else {
         console.error('Alien SVG element not found');
     }
 });
+
+// Add more detailed error logging
+alienImage.onerror = function(error) {
+    console.error('Failed to load alien image:', error);
+    console.error('Alien image src:', this.src);
+};
 
 // Debug function to check alien image status
 function checkAlienImageStatus() {
