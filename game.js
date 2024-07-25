@@ -91,9 +91,27 @@ function updateEnemies() {
 
     enemies.forEach(enemy => {
         enemy.y += enemy.speed;
+        enemy.x += Math.sin(enemy.y * 0.1) * 2; // Sine wave movement
+
         if (enemy.y > canvas.height) {
             enemies = enemies.filter(e => e !== enemy);
         }
+
+        // Randomly fire bullets
+        if (Math.random() < 0.001) {
+            fireEnemyBullet(enemy);
+        }
+    });
+}
+
+function fireEnemyBullet(enemy) {
+    bullets.push({
+        x: enemy.x + enemy.width / 2,
+        y: enemy.y + enemy.height,
+        width: 4,
+        height: 10,
+        speed: -5,
+        isEnemyBullet: true
     });
 }
 
@@ -131,18 +149,104 @@ function fireBullet() {
 }
 
 function updatePowerUps() {
-    // Power-up spawning and movement logic here
+    if (Math.random() < 0.001) {
+        spawnPowerUp();
+    }
+
+    powerUps.forEach(powerUp => {
+        powerUp.y += powerUp.speed;
+        if (powerUp.y > canvas.height) {
+            powerUps = powerUps.filter(p => p !== powerUp);
+        }
+    });
+}
+
+function spawnPowerUp() {
+    powerUps.push({
+        x: Math.random() * (canvas.width - 20),
+        y: 0,
+        width: 20,
+        height: 20,
+        speed: 2,
+        type: Math.random() < 0.5 ? 'rapidFire' : 'shield'
+    });
+}
+
+function applyPowerUp(powerUp) {
+    if (powerUp.type === 'rapidFire') {
+        player.rapidFire = true;
+        setTimeout(() => { player.rapidFire = false; }, 5000);
+    } else if (powerUp.type === 'shield') {
+        player.shield = true;
+        setTimeout(() => { player.shield = false; }, 5000);
+    }
 }
 
 // Collision detection
 function checkCollisions() {
-    // Collision detection logic here
+    // Check player bullet-enemy collisions
+    bullets.filter(bullet => !bullet.isEnemyBullet).forEach(bullet => {
+        enemies.forEach(enemy => {
+            if (isColliding(bullet, enemy)) {
+                bullets = bullets.filter(b => b !== bullet);
+                enemies = enemies.filter(e => e !== enemy);
+                score += 10;
+            }
+        });
+    });
+
+    // Check enemy bullet-player collisions
+    bullets.filter(bullet => bullet.isEnemyBullet).forEach(bullet => {
+        if (isColliding(bullet, player)) {
+            bullets = bullets.filter(b => b !== bullet);
+            if (player.shield) {
+                player.shield = false;
+            } else {
+                gameOver();
+            }
+        }
+    });
+
+    // Check player-enemy collisions
+    enemies.forEach(enemy => {
+        if (isColliding(player, enemy)) {
+            if (player.shield) {
+                player.shield = false;
+                enemies = enemies.filter(e => e !== enemy);
+            } else {
+                gameOver();
+            }
+        }
+    });
+
+    // Check player-powerUp collisions
+    powerUps.forEach(powerUp => {
+        if (isColliding(player, powerUp)) {
+            applyPowerUp(powerUp);
+            powerUps = powerUps.filter(p => p !== powerUp);
+        }
+    });
+}
+
+function isColliding(obj1, obj2) {
+    return obj1.x < obj2.x + obj2.width &&
+           obj1.x + obj1.width > obj2.x &&
+           obj1.y < obj2.y + obj2.height &&
+           obj1.y + obj1.height > obj2.y;
 }
 
 // Rendering functions
 function renderPlayer() {
     ctx.fillStyle = '#00f';
     ctx.fillRect(player.x, player.y, player.width, player.height);
+
+    if (player.shield) {
+        ctx.strokeStyle = '#0ff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(player.x + player.width / 2, player.y + player.height / 2, 30, 0, Math.PI * 2);
+        ctx.stroke();
+    }
 }
 
 function renderEnemies() {
@@ -153,14 +257,17 @@ function renderEnemies() {
 }
 
 function renderBullets() {
-    ctx.fillStyle = '#fff';
     bullets.forEach(bullet => {
+        ctx.fillStyle = bullet.isEnemyBullet ? '#f00' : '#fff';
         ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
     });
 }
 
 function renderPowerUps() {
-    // Render power-ups here
+    powerUps.forEach(powerUp => {
+        ctx.fillStyle = powerUp.type === 'rapidFire' ? '#ff0' : '#0ff';
+        ctx.fillRect(powerUp.x, powerUp.y, powerUp.width, powerUp.height);
+    });
 }
 
 // Input handling
