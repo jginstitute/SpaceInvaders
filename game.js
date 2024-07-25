@@ -3,7 +3,12 @@ let canvas, ctx;
 let player, enemies, bullets, powerUps;
 let gameLoop, gameState;
 let score = 0;
+let level = 1;
+let lives = 3;
 let keys = {};
+
+// Sound effects
+let shootSound, explosionSound, powerUpSound;
 
 // Game states
 const GAME_STATE = {
@@ -33,6 +38,11 @@ function init() {
     enemies = [];
     bullets = [];
     powerUps = [];
+
+    // Load sound effects
+    shootSound = new Audio('shoot.wav');
+    explosionSound = new Audio('explosion.wav');
+    powerUpSound = new Audio('powerup.wav');
 
     // Event listeners
     document.addEventListener('keydown', handleKeyDown);
@@ -65,10 +75,12 @@ function update() {
         renderBullets();
         renderPowerUps();
 
-        // Render score
+        // Render score, level, and lives
         ctx.fillStyle = '#fff';
         ctx.font = '20px Arial';
         ctx.fillText(`Score: ${score}`, 10, 30);
+        ctx.fillText(`Level: ${level}`, 10, 60);
+        ctx.fillText(`Lives: ${lives}`, 10, 90);
     }
 
     gameLoop = requestAnimationFrame(update);
@@ -118,12 +130,15 @@ function fireEnemyBullet(enemy) {
 function spawnEnemies() {
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 8; j++) {
+            let enemyType = Math.random() < 0.2 ? 'tough' : 'normal';
             enemies.push({
                 x: j * 80 + 50,
                 y: i * 50 + 30,
                 width: 40,
                 height: 30,
-                speed: 0.5
+                speed: 0.5 + (level * 0.1),
+                type: enemyType,
+                health: enemyType === 'tough' ? 2 : 1
             });
         }
     }
@@ -146,6 +161,7 @@ function fireBullet() {
         height: 10,
         speed: 7
     });
+    shootSound.play();
 }
 
 function updatePowerUps() {
@@ -189,8 +205,12 @@ function checkCollisions() {
         enemies.forEach(enemy => {
             if (isColliding(bullet, enemy)) {
                 bullets = bullets.filter(b => b !== bullet);
-                enemies = enemies.filter(e => e !== enemy);
-                score += 10;
+                enemy.health--;
+                if (enemy.health <= 0) {
+                    enemies = enemies.filter(e => e !== enemy);
+                    score += enemy.type === 'tough' ? 20 : 10;
+                    explosionSound.play();
+                }
             }
         });
     });
@@ -202,7 +222,7 @@ function checkCollisions() {
             if (player.shield) {
                 player.shield = false;
             } else {
-                gameOver();
+                loseLife();
             }
         }
     });
@@ -214,7 +234,7 @@ function checkCollisions() {
                 player.shield = false;
                 enemies = enemies.filter(e => e !== enemy);
             } else {
-                gameOver();
+                loseLife();
             }
         }
     });
@@ -224,8 +244,23 @@ function checkCollisions() {
         if (isColliding(player, powerUp)) {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
+            powerUpSound.play();
         }
     });
+}
+
+function loseLife() {
+    lives--;
+    if (lives <= 0) {
+        gameOver();
+    } else {
+        resetPlayerPosition();
+    }
+}
+
+function resetPlayerPosition() {
+    player.x = canvas.width / 2 - player.width / 2;
+    player.y = canvas.height - 60;
 }
 
 function isColliding(obj1, obj2) {
@@ -250,8 +285,8 @@ function renderPlayer() {
 }
 
 function renderEnemies() {
-    ctx.fillStyle = '#f00';
     enemies.forEach(enemy => {
+        ctx.fillStyle = enemy.type === 'tough' ? '#800' : '#f00';
         ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
     });
 }
@@ -299,7 +334,22 @@ function restartGame() {
     document.getElementById('game-over-screen').style.display = 'none';
     // Reset game variables and start a new game
     score = 0;
-    // Reset other game objects here
+    level = 1;
+    lives = 3;
+    enemies = [];
+    bullets = [];
+    powerUps = [];
+    resetPlayerPosition();
+    spawnEnemies();
+}
+
+function nextLevel() {
+    level++;
+    enemies = [];
+    bullets = [];
+    powerUps = [];
+    resetPlayerPosition();
+    spawnEnemies();
 }
 
 // Initialize the game when the window loads
