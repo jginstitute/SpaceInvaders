@@ -7,9 +7,6 @@ let level = 1;
 let lives = 3;
 let keys = {};
 
-// Web Audio
-let audioContext = null;
-let shootBuffer, explosionBuffer, powerUpBuffer;
 
 // Game states
 const GAME_STATE = {
@@ -159,24 +156,9 @@ function fireBullet() {
         height: 10,
         speed: 7
     });
-    playSound(shootBuffer);
+    // Sound effect for shooting (removed)
 }
 
-function loadSound(url, callback) {
-    fetch(url)
-        .then(response => response.arrayBuffer())
-        .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
-        .then(audioBuffer => callback(audioBuffer))
-        .catch(error => console.error('Error loading sound:', error));
-}
-
-function playSound(buffer) {
-    if (!buffer) return;
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContext.destination);
-    source.start();
-}
 
 function updatePowerUps() {
     if (Math.random() < 0.001) {
@@ -223,7 +205,7 @@ function checkCollisions() {
                 if (enemy.health <= 0) {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
-                    playSound(explosionBuffer);
+                    // Sound effect for explosion (removed)
                 }
             }
         });
@@ -258,7 +240,7 @@ function checkCollisions() {
         if (isColliding(player, powerUp)) {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
-            playSound(powerUpBuffer);
+            // Sound effect for power-up (removed)
         }
     });
 }
@@ -336,18 +318,7 @@ function startGame() {
     gameState = GAME_STATE.PLAYING;
     document.getElementById('start-screen').style.display = 'none';
     
-    // Initialize Web Audio
-    if (!audioContext) {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        loadSound('shoot.wav', buffer => shootBuffer = buffer);
-        loadSound('explosion.wav', buffer => explosionBuffer = buffer);
-        loadSound('powerup.wav', buffer => powerUpBuffer = buffer);
-    }
-    
-    // Resume AudioContext
-    if (audioContext.state === 'suspended') {
-        audioContext.resume();
-    }
+    // Web Audio initialization removed
 }
 
 function gameOver() {
