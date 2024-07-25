@@ -8,7 +8,7 @@ let lives = 3;
 let keys = {};
 
 // Web Audio
-let audioContext;
+let audioContext = null;
 let shootBuffer, explosionBuffer, powerUpBuffer;
 
 // Game states
@@ -40,11 +40,7 @@ function init() {
     bullets = [];
     powerUps = [];
 
-    // Initialize Web Audio
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    loadSound('shoot.wav', buffer => shootBuffer = buffer);
-    loadSound('explosion.wav', buffer => explosionBuffer = buffer);
-    loadSound('powerup.wav', buffer => powerUpBuffer = buffer);
+    // Web Audio will be initialized when the game starts
 
     // Event listeners
     document.addEventListener('keydown', handleKeyDown);
@@ -339,6 +335,19 @@ function handleKeyUp(e) {
 function startGame() {
     gameState = GAME_STATE.PLAYING;
     document.getElementById('start-screen').style.display = 'none';
+    
+    // Initialize Web Audio
+    if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        loadSound('shoot.wav', buffer => shootBuffer = buffer);
+        loadSound('explosion.wav', buffer => explosionBuffer = buffer);
+        loadSound('powerup.wav', buffer => powerUpBuffer = buffer);
+    }
+    
+    // Resume AudioContext
+    if (audioContext.state === 'suspended') {
+        audioContext.resume();
+    }
 }
 
 function gameOver() {
