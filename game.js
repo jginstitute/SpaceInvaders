@@ -102,18 +102,14 @@ function updateEnemies() {
         spawnEnemies();
     }
 
-    const time = Date.now() * 0.001; // Current time in seconds
-    const amplitude = 100; // Amplitude of the sine wave
-    const frequency = 0.5; // Frequency of the sine wave
-
     enemies.forEach(enemy => {
         enemy.y += enemy.speed;
-
+        
         // Calculate the sine wave movement
-        let sineWave = Math.sin(time * frequency + enemy.initialPhase) * amplitude;
+        let sineWave = Math.sin(enemy.y * 0.1) * 2;
         
         // Calculate the new x position
-        let newX = enemy.initialX + sineWave;
+        let newX = enemy.x + sineWave;
         
         // Constrain the enemy within the canvas boundaries
         newX = Math.max(0, Math.min(newX, canvas.width - enemy.width));
@@ -147,17 +143,14 @@ function spawnEnemies() {
     for (let i = 0; i < 5; i++) {
         for (let j = 0; j < 8; j++) {
             let enemyType = Math.random() < 0.2 ? 'tough' : 'normal';
-            let initialX = j * 60 + 50;
             enemies.push({
-                x: initialX,
+                x: j * 60 + 50,
                 y: i * 50 + 30,
                 width: 40,
                 height: 24,
                 speed: 0.2 + (level * 0.05),
                 type: enemyType,
-                health: enemyType === 'tough' ? 2 : 1,
-                initialX: initialX,
-                initialPhase: Math.random() * Math.PI * 2 // Random initial phase
+                health: enemyType === 'tough' ? 2 : 1
             });
         }
     }
