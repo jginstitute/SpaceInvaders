@@ -312,11 +312,6 @@ function renderEnemies() {
         // Draw mouth
         ctx.fillRect(enemy.x + 8, enemy.y + enemy.height - 8, enemy.width - 16, 4);
     });
-    
-    // Debug information
-    ctx.fillStyle = '#fff';
-    ctx.font = '14px Arial';
-    ctx.fillText(`Aliens: ${enemies.length}`, 10, 120);
 }
 
 function renderBullets() {
