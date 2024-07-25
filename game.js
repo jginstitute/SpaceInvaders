@@ -309,7 +309,7 @@ window.addEventListener('load', () => {
         console.log('Alien SVG element found');
         const svgString = new XMLSerializer().serializeToString(alienSvg);
         console.log('SVG string:', svgString);
-        const dataUrl = 'data:image/svg+xml;base64,' + btoa(svgString);
+        const dataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
         console.log('Data URL created');
         alienImage.src = dataUrl;
     } else {
