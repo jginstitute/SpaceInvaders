@@ -307,6 +307,12 @@ function renderEnemies() {
         // If image is not loaded yet, try to load it again
         alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(document.getElementById('alien').outerHTML);
     }
+    
+    // Debug information
+    ctx.fillStyle = '#fff';
+    ctx.font = '14px Arial';
+    ctx.fillText(`Aliens: ${enemies.length}`, 10, 120);
+    ctx.fillText(`Alien Image Loaded: ${alienImageLoaded}`, 10, 140);
 }
 
 function renderBullets() {
@@ -340,7 +346,8 @@ function startGame() {
     gameState = GAME_STATE.PLAYING;
     document.getElementById('start-screen').style.display = 'none';
     
-    // Web Audio initialization removed
+    // Spawn enemies when the game starts
+    spawnEnemies();
 }
 
 function gameOver() {
