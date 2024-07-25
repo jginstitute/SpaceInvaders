@@ -38,7 +38,7 @@ function init() {
         y: canvas.height - 60,
         width: 50,
         height: 30,
-        speed: 5
+        speed: 4
     };
 
     enemies = [];
@@ -113,7 +113,7 @@ function updateEnemies() {
         }
 
         // Randomly fire bullets
-        if (Math.random() < 0.001) {
+        if (Math.random() < 0.0005) {
             fireEnemyBullet(enemy);
         }
     });
@@ -139,7 +139,7 @@ function spawnEnemies() {
                 y: i * 50 + 30,
                 width: 40,
                 height: 24,
-                speed: 0.5 + (level * 0.1),
+                speed: 0.2 + (level * 0.05),
                 type: enemyType,
                 health: enemyType === 'tough' ? 2 : 1
             });
