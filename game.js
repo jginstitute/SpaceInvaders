@@ -290,25 +290,11 @@ function renderPlayer() {
 
 function renderEnemies() {
     enemies.forEach(enemy => {
-        ctx.fillStyle = '#0f0'; // Green color for aliens
-        
-        // Main body
-        ctx.fillRect(enemy.x + 8, enemy.y, 24, 16);
-        
-        // Top antennas
-        ctx.fillRect(enemy.x, enemy.y, 8, 8);
-        ctx.fillRect(enemy.x + 32, enemy.y, 8, 8);
-        
-        // Bottom parts
-        ctx.fillRect(enemy.x, enemy.y + 16, 8, 8);
-        ctx.fillRect(enemy.x + 32, enemy.y + 16, 8, 8);
-        ctx.fillRect(enemy.x + 8, enemy.y + 16, 8, 8);
-        ctx.fillRect(enemy.x + 24, enemy.y + 16, 8, 8);
-        
-        // Eyes (black)
-        ctx.fillStyle = '#000';
-        ctx.fillRect(enemy.x + 8, enemy.y + 8, 8, 8);
-        ctx.fillRect(enemy.x + 24, enemy.y + 8, 8, 8);
+        ctx.save();
+        ctx.translate(enemy.x, enemy.y);
+        const alienSVG = document.getElementById('alien');
+        ctx.drawImage(alienSVG, 0, 0, enemy.width, enemy.height);
+        ctx.restore();
     });
 }
 
