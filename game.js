@@ -296,17 +296,26 @@ alienImage.onload = function() {
     alienImageLoaded = true;
 };
 
-alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(document.getElementById('alien').outerHTML);
+// Load the alien SVG when the window loads
+window.addEventListener('load', () => {
+    const alienSvg = document.getElementById('alien');
+    if (alienSvg) {
+        alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(alienSvg.outerHTML);
+    } else {
+        console.error('Alien SVG element not found');
+    }
+});
 
 function renderEnemies() {
-    if (alienImageLoaded) {
-        enemies.forEach(enemy => {
+    enemies.forEach(enemy => {
+        if (alienImageLoaded) {
             ctx.drawImage(alienImage, enemy.x, enemy.y, enemy.width, enemy.height);
-        });
-    } else {
-        // If image is not loaded yet, try to load it again
-        alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(document.getElementById('alien').outerHTML);
-    }
+        } else {
+            // Fallback rendering if image is not loaded
+            ctx.fillStyle = '#0f0';
+            ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        }
+    });
     
     // Debug information
     ctx.fillStyle = '#fff';
