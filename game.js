@@ -276,8 +276,21 @@ function isColliding(obj1, obj2) {
 
 // Rendering functions
 function renderPlayer() {
-    ctx.fillStyle = '#00f';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
+    ctx.fillStyle = '#0f0';  // Change color to green like the original
+    
+    // Draw the base of the ship
+    ctx.fillRect(player.x, player.y + player.height - 10, player.width, 10);
+    
+    // Draw the triangular top of the ship
+    ctx.beginPath();
+    ctx.moveTo(player.x + player.width / 2, player.y);
+    ctx.lineTo(player.x, player.y + player.height - 10);
+    ctx.lineTo(player.x + player.width, player.y + player.height - 10);
+    ctx.closePath();
+    ctx.fill();
+
+    // Draw a small rectangle for the "cannon"
+    ctx.fillRect(player.x + player.width / 2 - 2, player.y - 5, 4, 5);
 
     if (player.shield) {
         ctx.strokeStyle = '#0ff';
