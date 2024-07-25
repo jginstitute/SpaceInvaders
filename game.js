@@ -299,18 +299,14 @@ alienImage.onload = function() {
 alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(document.getElementById('alien').outerHTML);
 
 function renderEnemies() {
-    enemies.forEach(enemy => {
-        ctx.save();
-        ctx.translate(enemy.x, enemy.y);
-        if (alienImageLoaded) {
-            ctx.drawImage(alienImage, 0, 0, enemy.width, enemy.height);
-        } else {
-            // Fallback rendering if image is not loaded
-            ctx.fillStyle = '#0f0';
-            ctx.fillRect(0, 0, enemy.width, enemy.height);
-        }
-        ctx.restore();
-    });
+    if (alienImageLoaded) {
+        enemies.forEach(enemy => {
+            ctx.drawImage(alienImage, enemy.x, enemy.y, enemy.width, enemy.height);
+        });
+    } else {
+        // If image is not loaded yet, try to load it again
+        alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(document.getElementById('alien').outerHTML);
+    }
 }
 
 function renderBullets() {
