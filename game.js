@@ -288,68 +288,24 @@ function renderPlayer() {
     }
 }
 
-// Create an Image object to hold the alien SVG
-const alienImage = new Image();
-let alienImageLoaded = false;
-
-alienImage.onload = function() {
-    console.log('Alien image loaded successfully');
-    alienImageLoaded = true;
-};
-
-alienImage.onerror = function() {
-    console.error('Failed to load alien image');
-};
-
-// Load the alien SVG when the window loads
-window.addEventListener('load', () => {
-    console.log('Window loaded, attempting to load alien SVG');
-    const alienSvg = document.getElementById('alien');
-    if (alienSvg) {
-        console.log('Alien SVG element found');
-        const svgString = new XMLSerializer().serializeToString(alienSvg);
-        console.log('SVG string:', svgString);
-        const dataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgString)));
-        console.log('Data URL created');
-        alienImage.src = dataUrl;
-    } else {
-        console.error('Alien SVG element not found');
-    }
-});
-
-// Add more detailed error logging
-alienImage.onerror = function(error) {
-    console.error('Failed to load alien image:', error);
-    console.error('Alien image src:', this.src);
-};
-
-// Debug function to check alien image status
-function checkAlienImageStatus() {
-    console.log('Alien image loaded:', alienImageLoaded);
-    console.log('Alien image src:', alienImage.src);
-    console.log('Alien image width:', alienImage.width);
-    console.log('Alien image height:', alienImage.height);
-}
-
-// Call this function periodically
-setInterval(checkAlienImageStatus, 5000);
-
 function renderEnemies() {
     enemies.forEach(enemy => {
-        if (alienImageLoaded) {
-            ctx.drawImage(alienImage, enemy.x, enemy.y, enemy.width, enemy.height);
-        } else {
-            // Fallback rendering if image is not loaded
-            ctx.fillStyle = '#0f0';
-            ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
-        }
+        ctx.fillStyle = '#0f0';
+        ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
+        
+        // Draw eyes
+        ctx.fillStyle = '#000';
+        ctx.fillRect(enemy.x + 8, enemy.y + 8, 8, 8);
+        ctx.fillRect(enemy.x + enemy.width - 16, enemy.y + 8, 8, 8);
+        
+        // Draw mouth
+        ctx.fillRect(enemy.x + 8, enemy.y + enemy.height - 8, enemy.width - 16, 4);
     });
     
     // Debug information
     ctx.fillStyle = '#fff';
     ctx.font = '14px Arial';
     ctx.fillText(`Aliens: ${enemies.length}`, 10, 120);
-    ctx.fillText(`Alien Image Loaded: ${alienImageLoaded}`, 10, 140);
 }
 
 function renderBullets() {
