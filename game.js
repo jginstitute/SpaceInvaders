@@ -293,18 +293,40 @@ const alienImage = new Image();
 let alienImageLoaded = false;
 
 alienImage.onload = function() {
+    console.log('Alien image loaded successfully');
     alienImageLoaded = true;
+};
+
+alienImage.onerror = function() {
+    console.error('Failed to load alien image');
 };
 
 // Load the alien SVG when the window loads
 window.addEventListener('load', () => {
+    console.log('Window loaded, attempting to load alien SVG');
     const alienSvg = document.getElementById('alien');
     if (alienSvg) {
-        alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(alienSvg.outerHTML);
+        console.log('Alien SVG element found');
+        const svgString = alienSvg.outerHTML;
+        console.log('SVG string:', svgString);
+        const dataUrl = 'data:image/svg+xml,' + encodeURIComponent(svgString);
+        console.log('Data URL created');
+        alienImage.src = dataUrl;
     } else {
         console.error('Alien SVG element not found');
     }
 });
+
+// Debug function to check alien image status
+function checkAlienImageStatus() {
+    console.log('Alien image loaded:', alienImageLoaded);
+    console.log('Alien image src:', alienImage.src);
+    console.log('Alien image width:', alienImage.width);
+    console.log('Alien image height:', alienImage.height);
+}
+
+// Call this function periodically
+setInterval(checkAlienImageStatus, 5000);
 
 function renderEnemies() {
     enemies.forEach(enemy => {
