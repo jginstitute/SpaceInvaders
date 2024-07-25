@@ -288,12 +288,17 @@ function renderPlayer() {
     }
 }
 
+// Create an Image object to hold the alien SVG
+const alienImage = new Image();
+alienImage.src = 'data:image/svg+xml,' + encodeURIComponent(document.getElementById('alien').outerHTML);
+
 function renderEnemies() {
     enemies.forEach(enemy => {
         ctx.save();
         ctx.translate(enemy.x, enemy.y);
-        const alienSVG = document.getElementById('alien');
-        ctx.drawImage(alienSVG, 0, 0, enemy.width, enemy.height);
+        if (alienImage.complete) {
+            ctx.drawImage(alienImage, 0, 0, enemy.width, enemy.height);
+        }
         ctx.restore();
     });
 }
