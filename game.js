@@ -52,6 +52,8 @@ function init() {
     document.addEventListener('keyup', handleKeyUp);
     document.getElementById('start-button').addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', restartGame);
+    canvas.addEventListener('mouseenter', handleMouseEnter);
+    canvas.addEventListener('mouseleave', handleMouseLeave);
 
     // Start the game loop
     gameLoop = requestAnimationFrame(update);
@@ -360,10 +362,21 @@ function handleKeyUp(e) {
     keys[e.code] = false;
 }
 
+function handleMouseEnter() {
+    if (gameState === GAME_STATE.PLAYING) {
+        canvas.style.cursor = 'none';
+    }
+}
+
+function handleMouseLeave() {
+    canvas.style.cursor = 'default';
+}
+
 // Game state functions
 function startGame() {
     gameState = GAME_STATE.PLAYING;
     document.getElementById('start-screen').style.display = 'none';
+    canvas.style.cursor = 'none';
     
     // Spawn enemies when the game starts
     spawnEnemies();
@@ -373,6 +386,7 @@ function gameOver() {
     gameState = GAME_STATE.GAME_OVER;
     document.getElementById('game-over-screen').style.display = 'block';
     document.getElementById('final-score').textContent = score;
+    canvas.style.cursor = 'default';
 }
 
 function restartGame() {
