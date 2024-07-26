@@ -106,8 +106,9 @@ function updateEnemies() {
         enemy.y += enemy.speed;
         enemy.x += Math.sin(enemy.y * 0.1) * 2; // Sine wave movement
 
-        if (enemy.y > canvas.height) {
+        if (enemy.y + enemy.height > canvas.height) {
             enemies = enemies.filter(e => e !== enemy);
+            loseLife();
         }
 
         // Randomly fire bullets
