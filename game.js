@@ -554,7 +554,14 @@ function checkLifeGain() {
     if (score - lastLifeGainScore >= 1000) {
         lives++;
         lastLifeGainScore = Math.floor(score / 1000) * 1000;
-        updateCommentary(`Extra life gained! Lives: ${lives}`, COMMENTARY_PRIORITY.GAIN_LIFE, "GAIN_LIFE");
+        const messages = [
+            `Fantastic! You've earned an extra life! Lives: ${lives}`,
+            `Incredible score! Extra life awarded! Lives: ${lives}`,
+            `Your stellar performance just earned you an extra life! Lives: ${lives}`,
+            `Amazing! You've secured an additional life! Lives: ${lives}`
+        ];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        updateCommentary(randomMessage, 7, "GAIN_LIFE");
     }
 }
 
