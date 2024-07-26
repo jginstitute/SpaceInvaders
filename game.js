@@ -10,6 +10,11 @@ let keys = {};
 // Audio elements
 let shootSound, explosionSound, powerupSound;
 
+// Commentary
+let commentaryElement;
+let lastCommentaryTime = 0;
+const COMMENTARY_COOLDOWN = 3000; // 3 seconds cooldown between comments
+
 
 // Game states
 const GAME_STATE = {
@@ -31,6 +36,9 @@ function init() {
     shootSound = document.getElementById('shoot-sound');
     explosionSound = document.getElementById('explosion-sound');
     powerupSound = document.getElementById('powerup-sound');
+
+    // Initialize commentary element
+    commentaryElement = document.getElementById('commentary');
 
     // Initialize game objects
     player = {
@@ -380,6 +388,7 @@ function startGame() {
     
     // Spawn enemies when the game starts
     spawnEnemies();
+    updateCommentary("Game started! Good luck, pilot!");
 }
 
 function gameOver() {
@@ -387,6 +396,7 @@ function gameOver() {
     document.getElementById('game-over-screen').style.display = 'block';
     document.getElementById('final-score').textContent = score;
     canvas.style.cursor = 'default';
+    updateCommentary(`Game over! Final score: ${score}. Great effort!`);
 }
 
 function restartGame() {
@@ -401,6 +411,29 @@ function restartGame() {
     powerUps = [];
     resetPlayerPosition();
     spawnEnemies();
+    updateCommentary("Game restarted! Let's try again!");
+}
+
+function loseLife() {
+    lives--;
+    if (lives <= 0) {
+        gameOver();
+    } else {
+        resetPlayerPosition();
+        updateCommentary(`Ouch! Lives remaining: ${lives}. Be careful!`);
+    }
+}
+
+function applyPowerUp(powerUp) {
+    if (powerUp.type === 'rapidFire') {
+        player.rapidFire = true;
+        setTimeout(() => { player.rapidFire = false; }, 5000);
+        updateCommentary("Rapid fire activated! Shoot 'em up!");
+    } else if (powerUp.type === 'shield') {
+        player.shield = true;
+        setTimeout(() => { player.shield = false; }, 5000);
+        updateCommentary("Shield activated! You're invincible... for now!");
+    }
 }
 
 function nextLevel() {
@@ -433,6 +466,16 @@ function nextLevel() {
     setTimeout(() => {
         document.getElementById('game-container').removeChild(levelUpMessage);
     }, 2000);
+
+    updateCommentary(`Level ${level} started! Enemies are getting faster!`);
+}
+
+function updateCommentary(message) {
+    const currentTime = Date.now();
+    if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN) {
+        commentaryElement.textContent = message;
+        lastCommentaryTime = currentTime;
+    }
 }
 
 // Initialize the game when the window loads
