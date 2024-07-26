@@ -282,7 +282,7 @@ function spawnPowerUp() {
         speed: 2,
         type: type
     });
-    updateCommentary(`A ${type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up has appeared!`);
+    updateCommentary(`A ${type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up has appeared!`, COMMENTARY_PRIORITY.POWERUP_APPEAR);
 }
 
 function applyPowerUp(powerUp) {
@@ -345,7 +345,7 @@ function checkCollisions() {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
             powerupSound.play();
-            updateCommentary(`${powerUp.type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up collected!`);
+            updateCommentary(`${powerUp.type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up collected!`, powerUp.type === 'rapidFire' ? COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE : COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD);
         }
     });
 }
@@ -500,7 +500,7 @@ function restartGame() {
     powerUps = [];
     resetPlayerPosition();
     spawnEnemies();
-    updateCommentary("Game restarted! Let's try again!");
+    updateCommentary("Game restarted! Let's try again!", COMMENTARY_PRIORITY.GAME_RESTART);
 }
 
 function loseLife() {
@@ -517,7 +517,7 @@ function loseLife() {
             `Shields down! ${lives} lives left. Stay focused!`
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        updateCommentary(`${randomMessage}`, true);
+        updateCommentary(`${randomMessage}`, COMMENTARY_PRIORITY.LOSE_LIFE);
     }
 }
 
@@ -525,11 +525,11 @@ function applyPowerUp(powerUp) {
     if (powerUp.type === 'rapidFire') {
         player.rapidFire = true;
         setTimeout(() => { player.rapidFire = false; }, 5000);
-        updateCommentary("Rapid fire activated! Shoot 'em up!");
+        updateCommentary("Rapid fire activated! Shoot 'em up!", COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE);
     } else if (powerUp.type === 'shield') {
         player.shield = true;
         setTimeout(() => { player.shield = false; }, 5000);
-        updateCommentary("Shield activated! You're invincible... for now!");
+        updateCommentary("Shield activated! You're invincible... for now!", COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD);
     }
 }
 
@@ -564,7 +564,7 @@ function nextLevel() {
         document.getElementById('game-container').removeChild(levelUpMessage);
     }, 2000);
 
-    updateCommentary(`Level ${level} started! Enemies are getting faster!`);
+    updateCommentary(`Level ${level} started! Enemies are getting faster!`, COMMENTARY_PRIORITY.LEVEL_UP);
 }
 
 function updateCommentary(message, priority) {
