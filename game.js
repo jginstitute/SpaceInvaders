@@ -19,6 +19,21 @@ let commentaryElement, speechOutput;
 let lastCommentaryTime = 0;
 const COMMENTARY_COOLDOWN = 3000; // 3 seconds cooldown between comments
 let isSpeaking = false;
+let currentSpeechPriority = 0;
+
+// Commentary priorities
+const COMMENTARY_PRIORITY = {
+    GAME_START: 9,
+    GAME_OVER: 10,
+    GAME_RESTART: 2,
+    LOSE_LIFE: 8,
+    POWERUP_APPEAR: 6,
+    POWERUP_COLLECT_RAPID_FIRE: 7,
+    POWERUP_COLLECT_SHIELD: 7,
+    ALIEN_DESTROYED_NORMAL: 2,
+    ALIEN_DESTROYED_TOUGH: 3,
+    LEVEL_UP: 8
+};
 
 // Alien destruction commentary variations
 const alienDestroyedPart1 = [
@@ -462,7 +477,7 @@ function startGame() {
     
     // Spawn enemies when the game starts
     spawnEnemies();
-    updateCommentary("Game started! Good luck, pilot!");
+    updateCommentary("Game started! Good luck, pilot!", COMMENTARY_PRIORITY.GAME_START);
 }
 
 function gameOver() {
@@ -470,7 +485,7 @@ function gameOver() {
     document.getElementById('game-over-screen').style.display = 'block';
     document.getElementById('final-score').textContent = score;
     canvas.style.cursor = 'default';
-    updateCommentary(`Game over! Final score: ${score}. Great effort!`);
+    updateCommentary(`Game over! Final score: ${score}. Great effort!`, COMMENTARY_PRIORITY.GAME_OVER);
 }
 
 function restartGame() {
@@ -552,9 +567,9 @@ function nextLevel() {
     updateCommentary(`Level ${level} started! Enemies are getting faster!`);
 }
 
-function updateCommentary(message, priority = false) {
+function updateCommentary(message, priority) {
     const currentTime = Date.now();
-    if (priority || currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN) {
+    if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN || priority > currentSpeechPriority) {
         commentaryElement.textContent = message;
         lastCommentaryTime = currentTime;
         
@@ -563,17 +578,20 @@ function updateCommentary(message, priority = false) {
     }
 }
 
-function speakMessage(message, priority = false) {
+function speakMessage(message, priority) {
     if ('speechSynthesis' in window) {
-        if (priority) {
+        if (priority > currentSpeechPriority) {
             speechSynthesis.cancel(); // Stop any ongoing speech
+            isSpeaking = false;
         }
         
-        if (!isSpeaking || priority) {
+        if (!isSpeaking) {
             isSpeaking = true;
+            currentSpeechPriority = priority;
             const utterance = new SpeechSynthesisUtterance(message);
             utterance.onend = () => {
                 isSpeaking = false;
+                currentSpeechPriority = 0;
             };
             speechSynthesis.speak(utterance);
         }
