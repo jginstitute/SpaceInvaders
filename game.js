@@ -485,6 +485,7 @@ function gameOver() {
     document.getElementById('game-over-screen').style.display = 'block';
     document.getElementById('final-score').textContent = score;
     canvas.style.cursor = 'default';
+    resetPowerUps();
     updateCommentary(`Game over! Final score: ${score}. Great effort!`, COMMENTARY_PRIORITY.GAME_OVER);
 }
 
@@ -524,13 +525,22 @@ function loseLife() {
 function applyPowerUp(powerUp) {
     if (powerUp.type === 'rapidFire') {
         player.rapidFire = true;
-        setTimeout(() => { player.rapidFire = false; }, 5000);
+        clearTimeout(player.rapidFireTimeout);
+        player.rapidFireTimeout = setTimeout(() => { player.rapidFire = false; }, 5000);
         updateCommentary("Rapid fire activated! Shoot 'em up!", COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE);
     } else if (powerUp.type === 'shield') {
         player.shield = true;
-        setTimeout(() => { player.shield = false; }, 5000);
+        clearTimeout(player.shieldTimeout);
+        player.shieldTimeout = setTimeout(() => { player.shield = false; }, 5000);
         updateCommentary("Shield activated! You're invincible... for now!", COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD);
     }
+}
+
+function resetPowerUps() {
+    player.rapidFire = false;
+    player.shield = false;
+    clearTimeout(player.rapidFireTimeout);
+    clearTimeout(player.shieldTimeout);
 }
 
 function nextLevel() {
@@ -539,6 +549,7 @@ function nextLevel() {
     bullets = [];
     powerUps = [];
     resetPlayerPosition();
+    resetPowerUps();
     spawnEnemies();
     
     // Increase player speed slightly
