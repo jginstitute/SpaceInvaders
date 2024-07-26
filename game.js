@@ -8,6 +8,8 @@ let lives = 3;
 let keys = {};
 let lastBulletTime = 0;
 const BULLET_COOLDOWN = 250; // 250 milliseconds cooldown between shots
+let invulnerableUntil = 0;
+const INVULNERABILITY_DURATION = 3000; // 3 seconds of invulnerability
 
 // Audio elements
 let shootSound, explosionSound, powerupSound;
@@ -297,28 +299,30 @@ function checkCollisions() {
     });
 
     // Check enemy bullet-player collisions
-    bullets.filter(bullet => bullet.isEnemyBullet).forEach(bullet => {
-        if (isColliding(bullet, player)) {
-            bullets = bullets.filter(b => b !== bullet);
-            if (player.shield) {
-                player.shield = false;
-            } else {
-                loseLife();
+    if (Date.now() >= invulnerableUntil) {
+        bullets.filter(bullet => bullet.isEnemyBullet).forEach(bullet => {
+            if (isColliding(bullet, player)) {
+                bullets = bullets.filter(b => b !== bullet);
+                if (player.shield) {
+                    player.shield = false;
+                } else {
+                    loseLife();
+                }
             }
-        }
-    });
+        });
 
-    // Check player-enemy collisions
-    enemies.forEach(enemy => {
-        if (isColliding(player, enemy)) {
-            if (player.shield) {
-                player.shield = false;
-                enemies = enemies.filter(e => e !== enemy);
-            } else {
-                loseLife();
+        // Check player-enemy collisions
+        enemies.forEach(enemy => {
+            if (isColliding(player, enemy)) {
+                if (player.shield) {
+                    player.shield = false;
+                    enemies = enemies.filter(e => e !== enemy);
+                } else {
+                    loseLife();
+                }
             }
-        }
-    });
+        });
+    }
 
     // Check player-powerUp collisions
     powerUps.forEach(powerUp => {
@@ -370,12 +374,19 @@ function renderPlayer() {
     // Draw a small rectangle for the "cannon"
     ctx.fillRect(player.x + player.width / 2 - 2, player.y - 5, 4, 5);
 
-    if (player.shield) {
-        ctx.strokeStyle = '#0ff';
+    if (player.shield || Date.now() < invulnerableUntil) {
+        ctx.strokeStyle = player.shield ? '#0ff' : '#fff';
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.arc(player.x + player.width / 2, player.y + player.height / 2, 30, 0, Math.PI * 2);
         ctx.stroke();
+    }
+
+    // Make the player blink when invulnerable
+    if (Date.now() < invulnerableUntil && Math.floor(Date.now() / 100) % 2 === 0) {
+        ctx.globalAlpha = 0.5;
+    } else {
+        ctx.globalAlpha = 1;
     }
 }
 
@@ -483,7 +494,8 @@ function loseLife() {
         gameOver();
     } else {
         resetPlayerPosition();
-        updateCommentary(`Ouch! Lives remaining: ${lives}. Be careful!`);
+        invulnerableUntil = Date.now() + INVULNERABILITY_DURATION;
+        updateCommentary(`Ouch! Lives remaining: ${lives}. You're invulnerable for a few seconds!`);
     }
 }
 
