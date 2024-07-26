@@ -282,7 +282,7 @@ function spawnPowerUp() {
         speed: 2,
         type: type
     });
-    updateCommentary(`A ${type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up has appeared!`, COMMENTARY_PRIORITY.POWERUP_APPEAR);
+    updateCommentary(`A ${type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up has appeared!`, COMMENTARY_PRIORITY.POWERUP_APPEAR, "POWERUP_APPEAR");
 }
 
 function applyPowerUp(powerUp) {
@@ -307,7 +307,9 @@ function checkCollisions() {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
                     explosionSound.play();
-                    updateCommentary(enemy.type === 'tough' ? 'Tough alien eliminated! Great work!' : getRandomAlienDestroyedComment());
+                    updateCommentary(enemy.type === 'tough' ? 'Tough alien eliminated! Great work!' : getRandomAlienDestroyedComment(),
+                        enemy.type === 'tough' ? COMMENTARY_PRIORITY.ALIEN_DESTROYED_TOUGH : COMMENTARY_PRIORITY.ALIEN_DESTROYED_NORMAL,
+                        enemy.type === 'tough' ? "ALIEN_DESTROYED_TOUGH" : "ALIEN_DESTROYED_NORMAL");
                 }
             }
         });
@@ -345,7 +347,9 @@ function checkCollisions() {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
             powerupSound.play();
-            updateCommentary(`${powerUp.type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up collected!`, powerUp.type === 'rapidFire' ? COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE : COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD);
+            updateCommentary(`${powerUp.type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up collected!`, 
+                powerUp.type === 'rapidFire' ? COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE : COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD,
+                powerUp.type === 'rapidFire' ? "POWERUP_COLLECT_RAPID_FIRE" : "POWERUP_COLLECT_SHIELD");
         }
     });
 }
@@ -477,7 +481,7 @@ function startGame() {
     
     // Spawn enemies when the game starts
     spawnEnemies();
-    updateCommentary("Game started! Good luck, pilot!", COMMENTARY_PRIORITY.GAME_START);
+    updateCommentary("Game started! Good luck, pilot!", COMMENTARY_PRIORITY.GAME_START, "GAME_START");
 }
 
 function gameOver() {
@@ -486,7 +490,7 @@ function gameOver() {
     document.getElementById('final-score').textContent = score;
     canvas.style.cursor = 'default';
     resetPowerUps();
-    updateCommentary(`Game over! Final score: ${score}. Great effort!`, COMMENTARY_PRIORITY.GAME_OVER);
+    updateCommentary(`Game over! Final score: ${score}. Great effort!`, COMMENTARY_PRIORITY.GAME_OVER, "GAME_OVER");
 }
 
 function restartGame() {
@@ -501,7 +505,7 @@ function restartGame() {
     powerUps = [];
     resetPlayerPosition();
     spawnEnemies();
-    updateCommentary("Game restarted! Let's try again!", COMMENTARY_PRIORITY.GAME_RESTART);
+    updateCommentary("Game restarted! Let's try again!", COMMENTARY_PRIORITY.GAME_RESTART, "GAME_RESTART");
 }
 
 function loseLife() {
@@ -518,7 +522,7 @@ function loseLife() {
             `Shields down! ${lives} lives left. Stay focused!`
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        updateCommentary(`${randomMessage}`, COMMENTARY_PRIORITY.LOSE_LIFE);
+        updateCommentary(`${randomMessage}`, COMMENTARY_PRIORITY.LOSE_LIFE, "LOSE_LIFE");
     }
 }
 
@@ -527,12 +531,12 @@ function applyPowerUp(powerUp) {
         player.rapidFire = true;
         clearTimeout(player.rapidFireTimeout);
         player.rapidFireTimeout = setTimeout(() => { player.rapidFire = false; }, 5000);
-        updateCommentary("Rapid fire activated! Shoot 'em up!", COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE);
+        updateCommentary("Rapid fire activated! Shoot 'em up!", COMMENTARY_PRIORITY.POWERUP_COLLECT_RAPID_FIRE, "POWERUP_COLLECT_RAPID_FIRE");
     } else if (powerUp.type === 'shield') {
         player.shield = true;
         clearTimeout(player.shieldTimeout);
         player.shieldTimeout = setTimeout(() => { player.shield = false; }, 5000);
-        updateCommentary("Shield activated! You're invincible... for now!", COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD);
+        updateCommentary("Shield activated! You're invincible... for now!", COMMENTARY_PRIORITY.POWERUP_COLLECT_SHIELD, "POWERUP_COLLECT_SHIELD");
     }
 }
 
@@ -575,22 +579,29 @@ function nextLevel() {
         document.getElementById('game-container').removeChild(levelUpMessage);
     }, 2000);
 
-    updateCommentary(`Level ${level} started! Enemies are getting faster!`, COMMENTARY_PRIORITY.LEVEL_UP);
+    updateCommentary(`Level ${level} started! Enemies are getting faster!`, COMMENTARY_PRIORITY.LEVEL_UP, "LEVEL_UP");
 }
 
-function updateCommentary(message, priority = 0) {
+function updateCommentary(message, priority = 0, eventSpecification = '') {
     const currentTime = Date.now();
+    const tookPriority = priority > currentSpeechPriority ? "Priority YES" : "Priority NO";
+    
     if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN || priority > currentSpeechPriority) {
         commentaryElement.textContent = message;
         lastCommentaryTime = currentTime;
         
+        // Log the commentary event
+        console.log(`${new Date().toISOString()}, ${priority}, TTS NO, ${tookPriority}, ${eventSpecification}, "${message}"`);
+        
         // Text-to-speech
-        speakMessage(message, priority);
+        speakMessage(message, priority, eventSpecification);
     }
 }
 
-function speakMessage(message, priority) {
+function speakMessage(message, priority, eventSpecification) {
     if ('speechSynthesis' in window) {
+        const tookPriority = priority >= currentSpeechPriority ? "Priority YES" : "Priority NO";
+        
         if (priority >= currentSpeechPriority) {
             speechSynthesis.cancel(); // Stop any ongoing speech
             isSpeaking = false;
@@ -603,6 +614,9 @@ function speakMessage(message, priority) {
                 currentSpeechPriority = 0;
             };
             speechSynthesis.speak(utterance);
+            
+            // Log the TTS event
+            console.log(`${new Date().toISOString()}, ${priority}, TTS YES, ${tookPriority}, ${eventSpecification}, "${message}"`);
         }
     }
 }
