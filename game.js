@@ -10,6 +10,7 @@ let lastBulletTime = 0;
 const BULLET_COOLDOWN = 250; // 250 milliseconds cooldown between shots
 let invulnerableUntil = 0;
 const INVULNERABILITY_DURATION = 3000; // 3 seconds of invulnerability
+let lastLifeGainScore = 0; // Track the last score at which a life was gained
 
 // Audio elements
 let shootSound, explosionSound, powerupSound;
@@ -32,7 +33,8 @@ const COMMENTARY_PRIORITY = {
     POWERUP_COLLECT_SHIELD: 7,
     ALIEN_DESTROYED_NORMAL: 2,
     ALIEN_DESTROYED_TOUGH: 3,
-    LEVEL_UP: 8
+    LEVEL_UP: 8,
+    GAIN_LIFE: 8
 };
 
 // Alien destruction commentary variations
@@ -310,6 +312,7 @@ function checkCollisions() {
                     updateCommentary(enemy.type === 'tough' ? 'Tough alien eliminated! Great work!' : getRandomAlienDestroyedComment(),
                         enemy.type === 'tough' ? COMMENTARY_PRIORITY.ALIEN_DESTROYED_TOUGH : COMMENTARY_PRIORITY.ALIEN_DESTROYED_NORMAL,
                         enemy.type === 'tough' ? "ALIEN_DESTROYED_TOUGH" : "ALIEN_DESTROYED_NORMAL");
+                    checkLifeGain(); // Check if player should gain a life after scoring
                 }
             }
         });
@@ -545,6 +548,14 @@ function resetPowerUps() {
     player.shield = false;
     clearTimeout(player.rapidFireTimeout);
     clearTimeout(player.shieldTimeout);
+}
+
+function checkLifeGain() {
+    if (score - lastLifeGainScore >= 1000) {
+        lives++;
+        lastLifeGainScore = Math.floor(score / 1000) * 1000;
+        updateCommentary(`Extra life gained! Lives: ${lives}`, COMMENTARY_PRIORITY.GAIN_LIFE, "GAIN_LIFE");
+    }
 }
 
 function nextLevel() {
