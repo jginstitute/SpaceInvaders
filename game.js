@@ -102,21 +102,33 @@ function updateEnemies() {
         nextLevel();
     }
 
+    let moveDown = false;
     enemies.forEach(enemy => {
-        enemy.y += enemy.speed;
         enemy.x += enemy.speed;
+        
+        // Check if any enemy has reached the edge
         if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) {
-            enemy.speed = -enemy.speed; // Reverse direction
-        }
-
-        if (enemy.y + enemy.height > canvas.height) {
-            enemies = enemies.filter(e => e !== enemy);
-            loseLife();
+            moveDown = true;
         }
 
         // Randomly fire bullets
         if (Math.random() < enemy.fireRate) {
             fireEnemyBullet(enemy);
+        }
+    });
+
+    if (moveDown) {
+        enemies.forEach(enemy => {
+            enemy.y += 20; // Move down by 20 pixels
+            enemy.speed = -enemy.speed; // Reverse direction
+        });
+    }
+
+    // Check if any enemy has reached the bottom
+    enemies.forEach(enemy => {
+        if (enemy.y + enemy.height > canvas.height) {
+            enemies = enemies.filter(e => e !== enemy);
+            loseLife();
         }
     });
 }
