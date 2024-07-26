@@ -15,6 +15,39 @@ let commentaryElement;
 let lastCommentaryTime = 0;
 const COMMENTARY_COOLDOWN = 3000; // 3 seconds cooldown between comments
 
+// Alien destruction commentary variations
+const alienDestroyedPart1 = [
+    "Alien obliterated!",
+    "Enemy vaporized!",
+    "Invader eliminated!",
+    "Hostile neutralized!",
+    "Extraterrestrial erased!",
+    "Space threat removed!",
+    "Cosmic foe defeated!",
+    "Galactic menace destroyed!",
+    "Alien ship down!",
+    "Interstellar threat neutralized!"
+];
+
+const alienDestroyedPart2 = [
+    "Nice shot!",
+    "Bullseye!",
+    "Perfect aim!",
+    "You're on fire!",
+    "Keep it up!",
+    "Stellar shooting!",
+    "Impressive marksmanship!",
+    "You're a natural!",
+    "Cosmic sharpshooting!",
+    "Galactic precision!"
+];
+
+function getRandomAlienDestroyedComment() {
+    const part1 = alienDestroyedPart1[Math.floor(Math.random() * alienDestroyedPart1.length)];
+    const part2 = alienDestroyedPart2[Math.floor(Math.random() * alienDestroyedPart2.length)];
+    return `${part1} ${part2}`;
+}
+
 
 // Game states
 const GAME_STATE = {
@@ -244,7 +277,7 @@ function checkCollisions() {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
                     explosionSound.play();
-                    updateCommentary(`Alien destroyed! ${enemy.type === 'tough' ? 'Tough one down!' : 'Nice shot!'}`);
+                    updateCommentary(enemy.type === 'tough' ? 'Tough alien eliminated! Great work!' : getRandomAlienDestroyedComment());
                 }
             }
         });
