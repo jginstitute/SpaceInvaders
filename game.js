@@ -104,7 +104,12 @@ function updateEnemies() {
 
     enemies.forEach(enemy => {
         enemy.y += enemy.speed;
-        enemy.x += Math.sin(enemy.y * 0.1) * 2; // Sine wave movement
+        enemy.x += Math.sin(enemy.y * 0.1) * 1; // Reduce amplitude to 1
+        if (enemy.x < 0) {
+            enemy.x = 0;
+        } else if (enemy.x + enemy.width > canvas.width) {
+            enemy.x = canvas.width - enemy.width;
+        }
 
         if (enemy.y + enemy.height > canvas.height) {
             enemies = enemies.filter(e => e !== enemy);
