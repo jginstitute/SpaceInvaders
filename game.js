@@ -13,9 +13,10 @@ const BULLET_COOLDOWN = 250; // 250 milliseconds cooldown between shots
 let shootSound, explosionSound, powerupSound;
 
 // Commentary
-let commentaryElement;
+let commentaryElement, speechOutput;
 let lastCommentaryTime = 0;
 const COMMENTARY_COOLDOWN = 3000; // 3 seconds cooldown between comments
+let isSpeaking = false;
 
 // Alien destruction commentary variations
 const alienDestroyedPart1 = [
@@ -72,8 +73,9 @@ function init() {
     explosionSound = document.getElementById('explosion-sound');
     powerupSound = document.getElementById('powerup-sound');
 
-    // Initialize commentary element
+    // Initialize commentary elements
     commentaryElement = document.getElementById('commentary');
+    speechOutput = document.getElementById('speech-output');
 
     // Initialize game objects
     player = {
@@ -520,6 +522,22 @@ function updateCommentary(message) {
     if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN) {
         commentaryElement.textContent = message;
         lastCommentaryTime = currentTime;
+        
+        // Text-to-speech
+        if (!isSpeaking) {
+            speakMessage(message);
+        }
+    }
+}
+
+function speakMessage(message) {
+    if ('speechSynthesis' in window) {
+        isSpeaking = true;
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.onend = () => {
+            isSpeaking = false;
+        };
+        speechSynthesis.speak(utterance);
     }
 }
 
