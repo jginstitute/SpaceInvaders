@@ -99,7 +99,7 @@ function updatePlayer() {
 
 function updateEnemies() {
     if (enemies.length === 0) {
-        spawnEnemies();
+        nextLevel();
     }
 
     enemies.forEach(enemy => {
@@ -111,7 +111,7 @@ function updateEnemies() {
         }
 
         // Randomly fire bullets
-        if (Math.random() < 0.0005) {
+        if (Math.random() < enemy.fireRate) {
             fireEnemyBullet(enemy);
         }
     });
@@ -129,9 +129,12 @@ function fireEnemyBullet(enemy) {
 }
 
 function spawnEnemies() {
-    for (let i = 0; i < 5; i++) {
-        for (let j = 0; j < 8; j++) {
-            let enemyType = Math.random() < 0.2 ? 'tough' : 'normal';
+    const rows = Math.min(5 + Math.floor(level / 3), 8);
+    const cols = Math.min(8 + Math.floor(level / 2), 12);
+    
+    for (let i = 0; i < rows; i++) {
+        for (let j = 0; j < cols; j++) {
+            let enemyType = Math.random() < 0.2 + (level * 0.02) ? 'tough' : 'normal';
             enemies.push({
                 x: j * 60 + 50,
                 y: i * 50 + 30,
@@ -139,7 +142,8 @@ function spawnEnemies() {
                 height: 24,
                 speed: 0.2 + (level * 0.05),
                 type: enemyType,
-                health: enemyType === 'tough' ? 2 : 1
+                health: enemyType === 'tough' ? 2 : 1,
+                fireRate: 0.0005 + (level * 0.0001)
             });
         }
     }
@@ -376,6 +380,24 @@ function nextLevel() {
     powerUps = [];
     resetPlayerPosition();
     spawnEnemies();
+    
+    // Increase player speed slightly
+    player.speed = Math.min(player.speed + 0.2, 8);
+    
+    // Display level up message
+    const levelUpMessage = document.createElement('div');
+    levelUpMessage.textContent = `Level ${level}`;
+    levelUpMessage.style.position = 'absolute';
+    levelUpMessage.style.top = '50%';
+    levelUpMessage.style.left = '50%';
+    levelUpMessage.style.transform = 'translate(-50%, -50%)';
+    levelUpMessage.style.fontSize = '48px';
+    levelUpMessage.style.color = '#fff';
+    document.getElementById('game-container').appendChild(levelUpMessage);
+    
+    setTimeout(() => {
+        document.getElementById('game-container').removeChild(levelUpMessage);
+    }, 2000);
 }
 
 // Initialize the game when the window loads
