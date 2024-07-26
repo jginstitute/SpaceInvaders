@@ -627,6 +627,13 @@ function speakMessage(message, priority, eventSpecification) {
             isSpeaking = true;
             currentSpeechPriority = priority;
             const utterance = new SpeechSynthesisUtterance(message);
+            
+            // Randomly choose a voice
+            const voices = speechSynthesis.getVoices();
+            if (voices.length > 0) {
+                utterance.voice = voices[Math.floor(Math.random() * voices.length)];
+            }
+            
             utterance.onend = () => {
                 isSpeaking = false;
                 currentSpeechPriority = 0;
@@ -634,7 +641,7 @@ function speakMessage(message, priority, eventSpecification) {
             speechSynthesis.speak(utterance);
             
             // Log the TTS event
-            console.log(`${new Date().toISOString()}, ${priority}, TTS YES, ${tookPriority}, ${eventSpecification}, "${message}"`);
+            console.log(`${new Date().toISOString()}, ${priority}, TTS YES, ${tookPriority}, ${eventSpecification}, "${message}", Voice: ${utterance.voice ? utterance.voice.name : 'Default'}`);
         }
     }
 }
