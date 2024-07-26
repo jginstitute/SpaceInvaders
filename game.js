@@ -567,7 +567,7 @@ function nextLevel() {
     updateCommentary(`Level ${level} started! Enemies are getting faster!`, COMMENTARY_PRIORITY.LEVEL_UP);
 }
 
-function updateCommentary(message, priority) {
+function updateCommentary(message, priority = 0) {
     const currentTime = Date.now();
     if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN || priority > currentSpeechPriority) {
         commentaryElement.textContent = message;
@@ -580,12 +580,10 @@ function updateCommentary(message, priority) {
 
 function speakMessage(message, priority) {
     if ('speechSynthesis' in window) {
-        if (priority > currentSpeechPriority) {
+        if (priority >= currentSpeechPriority) {
             speechSynthesis.cancel(); // Stop any ongoing speech
             isSpeaking = false;
-        }
-        
-        if (!isSpeaking) {
+            
             isSpeaking = true;
             currentSpeechPriority = priority;
             const utterance = new SpeechSynthesisUtterance(message);
