@@ -104,11 +104,9 @@ function updateEnemies() {
 
     enemies.forEach(enemy => {
         enemy.y += enemy.speed;
-        enemy.x += Math.sin(enemy.y * 0.1) * 1.5; // Increase amplitude slightly to 1.5
-        if (enemy.x < 0) {
-            enemy.x = 0;
-        } else if (enemy.x + enemy.width > canvas.width) {
-            enemy.x = canvas.width - enemy.width;
+        enemy.x += enemy.speed;
+        if (enemy.x < 0 || enemy.x + enemy.width > canvas.width) {
+            enemy.speed = -enemy.speed; // Reverse direction
         }
 
         if (enemy.y + enemy.height > canvas.height) {
