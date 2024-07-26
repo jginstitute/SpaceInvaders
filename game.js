@@ -6,6 +6,8 @@ let score = 0;
 let level = 1;
 let lives = 3;
 let keys = {};
+let lastBulletTime = 0;
+const BULLET_COOLDOWN = 250; // 250 milliseconds cooldown between shots
 
 // Audio elements
 let shootSound, explosionSound, powerupSound;
@@ -108,6 +110,11 @@ function update() {
         updateEnemies();
         updateBullets();
         updatePowerUps();
+
+        // Check for bullet firing
+        if (keys.Space) {
+            fireBullet();
+        }
 
         // Check collisions
         checkCollisions();
@@ -218,14 +225,18 @@ function updateBullets() {
 }
 
 function fireBullet() {
-    bullets.push({
-        x: player.x + player.width / 2 - 2,
-        y: player.y,
-        width: 4,
-        height: 10,
-        speed: 7
-    });
-    shootSound.play();
+    const currentTime = Date.now();
+    if (currentTime - lastBulletTime >= BULLET_COOLDOWN || player.rapidFire) {
+        bullets.push({
+            x: player.x + player.width / 2 - 2,
+            y: player.y,
+            width: 4,
+            height: 10,
+            speed: 7
+        });
+        shootSound.play();
+        lastBulletTime = currentTime;
+    }
 }
 
 
@@ -398,9 +409,6 @@ function renderPowerUps() {
 // Input handling
 function handleKeyDown(e) {
     keys[e.code] = true;
-    if (e.code === 'Space' && gameState === GAME_STATE.PLAYING) {
-        fireBullet();
-    }
 }
 
 function handleKeyUp(e) {
