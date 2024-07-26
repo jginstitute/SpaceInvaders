@@ -502,7 +502,7 @@ function loseLife() {
             `Shields down! ${lives} lives left. Stay focused!`
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        updateCommentary(`${randomMessage} You're invulnerable for a few seconds!`);
+        updateCommentary(`${randomMessage} You're invulnerable for a few seconds!`, true);
     }
 }
 
@@ -552,27 +552,31 @@ function nextLevel() {
     updateCommentary(`Level ${level} started! Enemies are getting faster!`);
 }
 
-function updateCommentary(message) {
+function updateCommentary(message, priority = false) {
     const currentTime = Date.now();
-    if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN) {
+    if (priority || currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN) {
         commentaryElement.textContent = message;
         lastCommentaryTime = currentTime;
         
         // Text-to-speech
-        if (!isSpeaking) {
-            speakMessage(message);
-        }
+        speakMessage(message, priority);
     }
 }
 
-function speakMessage(message) {
+function speakMessage(message, priority = false) {
     if ('speechSynthesis' in window) {
-        isSpeaking = true;
-        const utterance = new SpeechSynthesisUtterance(message);
-        utterance.onend = () => {
-            isSpeaking = false;
-        };
-        speechSynthesis.speak(utterance);
+        if (priority) {
+            speechSynthesis.cancel(); // Stop any ongoing speech
+        }
+        
+        if (!isSpeaking || priority) {
+            isSpeaking = true;
+            const utterance = new SpeechSynthesisUtterance(message);
+            utterance.onend = () => {
+                isSpeaking = false;
+            };
+            speechSynthesis.speak(utterance);
+        }
     }
 }
 
