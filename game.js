@@ -381,7 +381,7 @@ function renderPlayer() {
 
 function renderEnemies() {
     enemies.forEach(enemy => {
-        ctx.fillStyle = '#0f0';
+        ctx.fillStyle = enemy.type === 'tough' ? '#f00' : '#0f0';
         ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height);
         
         // Draw eyes
@@ -390,7 +390,23 @@ function renderEnemies() {
         ctx.fillRect(enemy.x + enemy.width - 16, enemy.y + 8, 8, 8);
         
         // Draw mouth
-        ctx.fillRect(enemy.x + 8, enemy.y + enemy.height - 8, enemy.width - 16, 4);
+        if (enemy.type === 'tough') {
+            ctx.beginPath();
+            ctx.moveTo(enemy.x + 8, enemy.y + enemy.height - 8);
+            ctx.lineTo(enemy.x + enemy.width / 2, enemy.y + enemy.height - 4);
+            ctx.lineTo(enemy.x + enemy.width - 8, enemy.y + enemy.height - 8);
+            ctx.closePath();
+            ctx.fill();
+        } else {
+            ctx.fillRect(enemy.x + 8, enemy.y + enemy.height - 8, enemy.width - 16, 4);
+        }
+        
+        // Draw 'armor' for tough aliens
+        if (enemy.type === 'tough') {
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(enemy.x + 2, enemy.y + 2, enemy.width - 4, enemy.height - 4);
+        }
     });
 }
 
