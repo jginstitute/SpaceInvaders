@@ -64,9 +64,27 @@ const alienDestroyedPart2 = [
     "Galactic precision!"
 ];
 
-function getRandomAlienDestroyedComment() {
-    const part1 = alienDestroyedPart1[Math.floor(Math.random() * alienDestroyedPart1.length)];
-    const part2 = alienDestroyedPart2[Math.floor(Math.random() * alienDestroyedPart2.length)];
+const toughAlienDestroyedPart1 = [
+    "Tough alien eliminated!",
+    "Armored invader destroyed!",
+    "Resilient foe obliterated!",
+    "Fortified enemy neutralized!",
+    "Hardened alien vaporized!"
+];
+
+const toughAlienDestroyedPart2 = [
+    "Exceptional work!",
+    "Outstanding performance!",
+    "Masterful shooting!",
+    "Incredible precision!",
+    "Superb marksmanship!"
+];
+
+function getRandomAlienDestroyedComment(isTough = false) {
+    const part1Array = isTough ? toughAlienDestroyedPart1 : alienDestroyedPart1;
+    const part2Array = isTough ? toughAlienDestroyedPart2 : alienDestroyedPart2;
+    const part1 = part1Array[Math.floor(Math.random() * part1Array.length)];
+    const part2 = part2Array[Math.floor(Math.random() * part2Array.length)];
     return `${part1} ${part2}`;
 }
 
@@ -309,7 +327,7 @@ function checkCollisions() {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
                     explosionSound.play();
-                    updateCommentary(enemy.type === 'tough' ? 'Tough alien eliminated! Great work!' : getRandomAlienDestroyedComment(),
+                    updateCommentary(getRandomAlienDestroyedComment(enemy.type === 'tough'),
                         enemy.type === 'tough' ? COMMENTARY_PRIORITY.ALIEN_DESTROYED_TOUGH : COMMENTARY_PRIORITY.ALIEN_DESTROYED_NORMAL,
                         enemy.type === 'tough' ? "ALIEN_DESTROYED_TOUGH" : "ALIEN_DESTROYED_NORMAL");
                     checkLifeGain(); // Check if player should gain a life after scoring
