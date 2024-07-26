@@ -145,21 +145,21 @@ function fireEnemyBullet(enemy) {
 }
 
 function spawnEnemies() {
-    const rows = Math.min(5 + Math.floor(level / 3), 8);
-    const cols = Math.min(8 + Math.floor(level / 2), 12);
+    const rows = Math.min(3 + Math.floor(level / 2), 8);
+    const cols = Math.min(6 + Math.floor(level / 2), 12);
     
     for (let i = 0; i < rows; i++) {
         for (let j = 0; j < cols; j++) {
-            let enemyType = Math.random() < 0.2 + (level * 0.02) ? 'tough' : 'normal';
+            let enemyType = Math.random() < 0.1 + (level * 0.03) ? 'tough' : 'normal';
             enemies.push({
                 x: j * 60 + 50,
                 y: i * 50 + 30,
                 width: 40,
                 height: 24,
-                speed: 0.2 + (level * 0.05),
+                speed: 0.5 + (level * 0.1),
                 type: enemyType,
                 health: enemyType === 'tough' ? 2 : 1,
-                fireRate: 0.0005 + (level * 0.0001)
+                fireRate: 0.001 + (level * 0.0002)
             });
         }
     }
@@ -399,6 +399,11 @@ function nextLevel() {
     
     // Increase player speed slightly
     player.speed = Math.min(player.speed + 0.2, 8);
+    
+    // Increase enemy movement speed
+    enemies.forEach(enemy => {
+        enemy.speed *= 1.1;
+    });
     
     // Display level up message
     const levelUpMessage = document.createElement('div');
