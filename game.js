@@ -517,7 +517,7 @@ function loseLife() {
             `Shields down! ${lives} lives left. Stay focused!`
         ];
         const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        updateCommentary(`${randomMessage} You're invulnerable for a few seconds!`, true);
+        updateCommentary(`${randomMessage}`, true);
     }
 }
 
