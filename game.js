@@ -495,7 +495,14 @@ function loseLife() {
     } else {
         resetPlayerPosition();
         invulnerableUntil = Date.now() + INVULNERABILITY_DURATION;
-        updateCommentary(`Ouch! Lives remaining: ${lives}. You're invulnerable for a few seconds!`);
+        const messages = [
+            `Ouch! That's gotta hurt. Lives remaining: ${lives}.`,
+            `Watch out! You've lost a life. ${lives} left.`,
+            `Close call! You have ${lives} lives remaining.`,
+            `Shields down! ${lives} lives left. Stay focused!`
+        ];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        updateCommentary(`${randomMessage} You're invulnerable for a few seconds!`);
     }
 }
 
