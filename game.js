@@ -210,14 +210,16 @@ function updatePowerUps() {
 }
 
 function spawnPowerUp() {
+    const type = Math.random() < 0.5 ? 'rapidFire' : 'shield';
     powerUps.push({
         x: Math.random() * (canvas.width - 20),
         y: 0,
         width: 20,
         height: 20,
         speed: 2,
-        type: Math.random() < 0.5 ? 'rapidFire' : 'shield'
+        type: type
     });
+    updateCommentary(`A ${type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up has appeared!`);
 }
 
 function applyPowerUp(powerUp) {
@@ -242,6 +244,7 @@ function checkCollisions() {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
                     explosionSound.play();
+                    updateCommentary(`Alien destroyed! ${enemy.type === 'tough' ? 'Tough one down!' : 'Nice shot!'}`);
                 }
             }
         });
@@ -277,6 +280,7 @@ function checkCollisions() {
             applyPowerUp(powerUp);
             powerUps = powerUps.filter(p => p !== powerUp);
             powerupSound.play();
+            updateCommentary(`${powerUp.type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up collected!`);
         }
     });
 }
