@@ -19,6 +19,24 @@ body {
     font-size: 18px;
 }
 
+#settings-icon {
+    cursor: pointer;
+}
+
+#settings-panel {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    color: #fff;
+}
+
+#voice-select {
+    margin-top: 5px;
+}
+
 #game-container {
     position: relative;
 }

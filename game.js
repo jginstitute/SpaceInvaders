@@ -138,8 +138,40 @@ function init() {
     canvas.addEventListener('mouseenter', handleMouseEnter);
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
+    // Settings
+    document.getElementById('settings-icon').addEventListener('click', toggleSettingsPanel);
+    document.getElementById('voice-select').addEventListener('change', updateSelectedVoice);
+
+    // Populate voice options
+    populateVoiceOptions();
+
     // Start the game loop
     gameLoop = requestAnimationFrame(update);
+}
+
+// Settings functions
+function toggleSettingsPanel() {
+    const settingsPanel = document.getElementById('settings-panel');
+    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+}
+
+function populateVoiceOptions() {
+    const voiceSelect = document.getElementById('voice-select');
+    speechSynthesis.onvoiceschanged = () => {
+        const voices = speechSynthesis.getVoices();
+        voices.forEach((voice, index) => {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = voice.name;
+            voiceSelect.appendChild(option);
+        });
+    };
+}
+
+let selectedVoice = 'random';
+
+function updateSelectedVoice() {
+    selectedVoice = document.getElementById('voice-select').value;
 }
 
 // Main game loop
@@ -656,10 +688,14 @@ function speakMessage(message, priority, eventSpecification) {
             currentSpeechPriority = priority;
             const utterance = new SpeechSynthesisUtterance(message);
             
-            // Randomly choose a voice
+            // Choose a voice based on the selected option
             const voices = speechSynthesis.getVoices();
             if (voices.length > 0) {
-                utterance.voice = voices[Math.floor(Math.random() * voices.length)];
+                if (selectedVoice === 'random') {
+                    utterance.voice = voices[Math.floor(Math.random() * voices.length)];
+                } else {
+                    utterance.voice = voices[parseInt(selectedVoice)];
+                }
             }
             
             utterance.onend = () => {
