@@ -317,7 +317,7 @@ function applyPowerUp(powerUp) {
 
 // Collision detection
 function checkCollisions() {
-    // Check player bullet-enemy collisions
+    // Check player bullet-enemy collisions and player bullet-powerup collisions
     bullets.filter(bullet => !bullet.isEnemyBullet).forEach(bullet => {
         enemies.forEach(enemy => {
             if (isColliding(bullet, enemy)) {
@@ -332,6 +332,15 @@ function checkCollisions() {
                         enemy.type === 'tough' ? "ALIEN_DESTROYED_TOUGH" : "ALIEN_DESTROYED_NORMAL");
                     checkLifeGain(); // Check if player should gain a life after scoring
                 }
+            }
+        });
+    
+        powerUps.forEach(powerUp => {
+            if (isColliding(bullet, powerUp)) {
+                bullets = bullets.filter(b => b !== bullet);
+                powerUps = powerUps.filter(p => p !== powerUp);
+                explosionSound.play();
+                updateCommentary(`Power-up destroyed! Be more careful next time!`, 7, "POWERUP_DESTROYED");
             }
         });
     });
