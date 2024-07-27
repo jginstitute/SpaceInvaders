@@ -15,84 +15,14 @@ let lastLifeGainScore = 0; // Track the last score at which a life was gained
 // Audio elements
 let shootSound, explosionSound, powerupSound;
 
-// Commentary
-let commentaryElement, speechOutput;
-let lastCommentaryTime = 0;
-const COMMENTARY_COOLDOWN = 3000; // 3 seconds cooldown between comments
-let isSpeaking = false;
-let currentSpeechPriority = 0;
+import { initCommentary, updateCommentary, COMMENTARY_PRIORITY } from './commentary.js';
 
 // Settings
 let isSettingsOpen = false;
 let previousGameState;
 let commentaryStyle = 'trashtalk';
 
-// Commentary priorities
-const COMMENTARY_PRIORITY = {
-    GAME_START: 9,
-    GAME_OVER: 10,
-    GAME_RESTART: 2,
-    LOSE_LIFE: 8,
-    POWERUP_APPEAR: 6,
-    POWERUP_COLLECT_RAPID_FIRE: 7,
-    POWERUP_COLLECT_SHIELD: 7,
-    ALIEN_DESTROYED_NORMAL: 2,
-    ALIEN_DESTROYED_TOUGH: 3,
-    LEVEL_UP: 8,
-    GAIN_LIFE: 8,
-    POWERUP_DESTROYED: 7
-};
-
-// Alien destruction commentary variations
-const alienDestroyedPart1 = [
-    "Alien obliterated!",
-    "Enemy vaporized!",
-    "Invader eliminated!",
-    "Hostile neutralized!",
-    "Extraterrestrial erased!",
-    "Space threat removed!",
-    "Cosmic foe defeated!",
-    "Galactic menace destroyed!",
-    "Alien ship down!",
-    "Interstellar threat neutralized!"
-];
-
-const alienDestroyedPart2 = [
-    "Nice shot!",
-    "Bullseye!",
-    "Perfect aim!",
-    "You're on fire!",
-    "Keep it up!",
-    "Stellar shooting!",
-    "Impressive marksmanship!",
-    "You're a natural!",
-    "Cosmic sharpshooting!",
-    "Galactic precision!"
-];
-
-const toughAlienDestroyedPart1 = [
-    "Tough alien eliminated!",
-    "Armored invader destroyed!",
-    "Resilient foe obliterated!",
-    "Fortified enemy neutralized!",
-    "Hardened alien vaporized!"
-];
-
-const toughAlienDestroyedPart2 = [
-    "Exceptional work!",
-    "Outstanding performance!",
-    "Masterful shooting!",
-    "Incredible precision!",
-    "Superb marksmanship!"
-];
-
-function getRandomAlienDestroyedComment(isTough = false) {
-    const part1Array = isTough ? toughAlienDestroyedPart1 : alienDestroyedPart1;
-    const part2Array = isTough ? toughAlienDestroyedPart2 : alienDestroyedPart2;
-    const part1 = part1Array[Math.floor(Math.random() * part1Array.length)];
-    const part2 = part2Array[Math.floor(Math.random() * part2Array.length)];
-    return `${part1} ${part2}`;
-}
+// Alien destruction commentary variations have been moved to commentary.js
 
 
 // Game states
