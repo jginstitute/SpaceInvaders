@@ -623,11 +623,14 @@ function startGame() {
 
 function gameOver() {
     gameState = GAME_STATE.GAME_OVER;
-    document.getElementById('game-over-screen').style.display = 'block';
+    document.getElementById('game-over-screen').style.display = 'flex';
     document.getElementById('final-score').textContent = score;
     canvas.style.cursor = 'default';
     resetPowerUps();
     updateCommentary(`Game over! Final score: ${score}. Great effort!`, COMMENTARY_PRIORITY.GAME_OVER, "GAME_OVER");
+    
+    // Disable settings icon
+    document.getElementById('settings-icon').style.pointerEvents = 'none';
 }
 
 function restartGame() {
@@ -644,6 +647,9 @@ function restartGame() {
         resetPlayerPosition();
         spawnEnemies();
         updateCommentary("Game restarted! Let's try again!", COMMENTARY_PRIORITY.GAME_RESTART, "GAME_RESTART");
+        
+        // Re-enable settings icon
+        document.getElementById('settings-icon').style.pointerEvents = 'auto';
     }
 }
 
