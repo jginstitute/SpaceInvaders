@@ -315,7 +315,7 @@ function checkCollisions() {
                     enemies = enemies.filter(e => e !== enemy);
                     score += enemy.type === 'tough' ? 20 : 10;
                     explosionSound.play();
-                    updateCommentary(getRandomAlienDestroyedComment(enemy.type === 'tough'),
+                    updateCommentary("Alien destroyed!",
                         enemy.type === 'tough' ? COMMENTARY_PRIORITY.ALIEN_DESTROYED_TOUGH : COMMENTARY_PRIORITY.ALIEN_DESTROYED_NORMAL,
                         enemy.type === 'tough' ? "ALIEN_DESTROYED_TOUGH" : "ALIEN_DESTROYED_NORMAL");
                     checkLifeGain(); // Check if player should gain a life after scoring
