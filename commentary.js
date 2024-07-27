@@ -1,4 +1,4 @@
-import { commentaryStyle } from './game.js';
+import { commentaryStyle, selectedVoice } from './game.js';
 
 // Commentary
 let commentaryElement, speechOutput;

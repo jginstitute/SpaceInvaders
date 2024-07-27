@@ -126,7 +126,7 @@ function populateVoiceOptions() {
     };
 }
 
-let selectedVoice = 'random';
+export let selectedVoice = 'random';
 
 function updateSelectedVoice() {
     selectedVoice = document.getElementById('voice-select').value;
