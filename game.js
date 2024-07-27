@@ -103,6 +103,8 @@ const GAME_STATE = {
     PAUSED: 3
 };
 
+let pauseMessage;
+
 // Initialize the game
 function init() {
     canvas = document.getElementById('gameCanvas');
@@ -236,12 +238,6 @@ function update() {
         document.getElementById('lives').textContent = `Lives: ${lives}`;
 
         gameLoop = requestAnimationFrame(update);
-    } else if (gameState === GAME_STATE.PAUSED) {
-        // Render "PAUSED" text
-        ctx.fillStyle = 'white';
-        ctx.font = '48px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
     } else {
         gameLoop = requestAnimationFrame(update);
     }
@@ -558,10 +554,40 @@ function renderPowerUps() {
 // Input handling
 function handleKeyDown(e) {
     keys[e.code] = true;
+    if (e.code === 'Escape') {
+        togglePause();
+    }
 }
 
 function handleKeyUp(e) {
     keys[e.code] = false;
+}
+
+function togglePause() {
+    if (gameState === GAME_STATE.PLAYING) {
+        gameState = GAME_STATE.PAUSED;
+        pauseMessage = createPauseMessage();
+        updateCommentary("Game paused. Press ESC to resume.", COMMENTARY_PRIORITY.GAME_PAUSED, "GAME_PAUSED");
+    } else if (gameState === GAME_STATE.PAUSED) {
+        gameState = GAME_STATE.PLAYING;
+        document.getElementById('game-container').removeChild(pauseMessage);
+        updateCommentary("Game resumed. Good luck!", COMMENTARY_PRIORITY.GAME_RESUMED, "GAME_RESUMED");
+        gameLoop = requestAnimationFrame(update);
+    }
+}
+
+function createPauseMessage() {
+    const message = document.createElement('div');
+    message.textContent = 'PAUSED';
+    message.style.position = 'absolute';
+    message.style.top = '50%';
+    message.style.left = '50%';
+    message.style.transform = 'translate(-50%, -50%)';
+    message.style.fontSize = '48px';
+    message.style.color = '#fff';
+    message.style.fontWeight = 'bold';
+    document.getElementById('game-container').appendChild(message);
+    return message;
 }
 
 function handleMouseEnter() {
