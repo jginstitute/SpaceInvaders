@@ -22,6 +22,10 @@ const COMMENTARY_COOLDOWN = 3000; // 3 seconds cooldown between comments
 let isSpeaking = false;
 let currentSpeechPriority = 0;
 
+// Settings
+let isSettingsOpen = false;
+let previousGameState;
+
 // Commentary priorities
 const COMMENTARY_PRIORITY = {
     GAME_START: 9,
@@ -94,7 +98,8 @@ function getRandomAlienDestroyedComment(isTough = false) {
 const GAME_STATE = {
     START: 0,
     PLAYING: 1,
-    GAME_OVER: 2
+    GAME_OVER: 2,
+    PAUSED: 3
 };
 
 // Initialize the game
@@ -141,6 +146,7 @@ function init() {
     // Settings
     document.getElementById('settings-icon').addEventListener('click', toggleSettingsPanel);
     document.getElementById('voice-select').addEventListener('change', updateSelectedVoice);
+    document.getElementById('close-settings').addEventListener('click', toggleSettingsPanel);
 
     // Populate voice options
     populateVoiceOptions();
@@ -151,8 +157,26 @@ function init() {
 
 // Settings functions
 function toggleSettingsPanel() {
+    isSettingsOpen = !isSettingsOpen;
     const settingsPanel = document.getElementById('settings-panel');
-    settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'block' : 'none';
+    const modalOverlay = document.createElement('div');
+    modalOverlay.className = 'modal-overlay';
+
+    if (isSettingsOpen) {
+        settingsPanel.style.display = 'block';
+        document.body.appendChild(modalOverlay);
+        if (gameState === GAME_STATE.PLAYING) {
+            previousGameState = gameState;
+            gameState = GAME_STATE.PAUSED;
+        }
+    } else {
+        settingsPanel.style.display = 'none';
+        document.body.removeChild(document.querySelector('.modal-overlay'));
+        if (previousGameState === GAME_STATE.PLAYING) {
+            gameState = GAME_STATE.PLAYING;
+            gameLoop = requestAnimationFrame(update);
+        }
+    }
 }
 
 function populateVoiceOptions() {
@@ -204,9 +228,17 @@ function update() {
         document.getElementById('score').textContent = `Score: ${score}`;
         document.getElementById('level').textContent = `Level: ${level}`;
         document.getElementById('lives').textContent = `Lives: ${lives}`;
-    }
 
-    gameLoop = requestAnimationFrame(update);
+        gameLoop = requestAnimationFrame(update);
+    } else if (gameState === GAME_STATE.PAUSED) {
+        // Render "PAUSED" text
+        ctx.fillStyle = 'white';
+        ctx.font = '48px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
+    } else {
+        gameLoop = requestAnimationFrame(update);
+    }
 }
 
 // Game object update functions
