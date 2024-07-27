@@ -302,15 +302,6 @@ function spawnPowerUp() {
     updateCommentary(`A ${type === 'rapidFire' ? 'Rapid Fire' : 'Shield'} power-up has appeared!`, COMMENTARY_PRIORITY.POWERUP_APPEAR, "POWERUP_APPEAR");
 }
 
-function applyPowerUp(powerUp) {
-    if (powerUp.type === 'rapidFire') {
-        player.rapidFire = true;
-        setTimeout(() => { player.rapidFire = false; }, 5000);
-    } else if (powerUp.type === 'shield') {
-        player.shield = true;
-        setTimeout(() => { player.shield = false; }, 5000);
-    }
-}
 
 // Collision detection
 function checkCollisions() {
