@@ -9,15 +9,15 @@ let currentSpeechPriority = 0;
 
 // Commentary priorities
 const COMMENTARY_PRIORITY = {
-    ALIEN_DESTROYED_NORMAL: 5,
-    ALIEN_DESTROYED_TOUGH: 5,
-    POWERUP_APPEAR: 5,
-    POWERUP_COLLECT_RAPID_FIRE: 5,
-    POWERUP_COLLECT_SHIELD: 57,
+    ALIEN_DESTROYED_NORMAL: 1,
+    ALIEN_DESTROYED_TOUGH: 1,
+    POWERUP_APPEAR: 3,
+    POWERUP_COLLECT_RAPID_FIRE: 4,
+    POWERUP_COLLECT_SHIELD: 4,
     POWERUP_DESTROYED: 5,
-    LOSE_LIFE: 5,
-    LEVEL_UP: 5,
-    GAIN_LIFE: 5,
+    LOSE_LIFE: 8,
+    LEVEL_UP: 8,
+    GAIN_LIFE: 8,
     GAME_START: 10,
     GAME_RESTART: 10,
     GAME_OVER: 10
@@ -49,7 +49,7 @@ function speakMessage(message, priority, eventSpecification) {
     if ('speechSynthesis' in window) {
         const tookPriority = priority >= currentSpeechPriority ? "Priority YES" : "Priority NO";
         
-        if (priority >= currentSpeechPriority) {
+        if (priority > currentSpeechPriority) {
             speechSynthesis.cancel(); // Stop any ongoing speech
             isSpeaking = false;
             
