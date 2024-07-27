@@ -34,7 +34,8 @@ const COMMENTARY_PRIORITY = {
     ALIEN_DESTROYED_NORMAL: 2,
     ALIEN_DESTROYED_TOUGH: 3,
     LEVEL_UP: 8,
-    GAIN_LIFE: 8
+    GAIN_LIFE: 8,
+    POWERUP_DESTROYED: 7
 };
 
 // Alien destruction commentary variations
@@ -340,7 +341,7 @@ function checkCollisions() {
                 bullets = bullets.filter(b => b !== bullet);
                 powerUps = powerUps.filter(p => p !== powerUp);
                 explosionSound.play();
-                updateCommentary(`Power-up destroyed! Be more careful next time!`, 7, "POWERUP_DESTROYED");
+                updateCommentary(`Power-up destroyed! Be more careful next time!`, COMMENTARY_PRIORITY.POWERUP_DESTROYED, "POWERUP_DESTROYED");
             }
         });
     });
