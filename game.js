@@ -387,6 +387,15 @@ function loseLife() {
         gameOver();
     } else {
         resetPlayerPosition();
+        invulnerableUntil = Date.now() + INVULNERABILITY_DURATION;
+        const messages = [
+            `Ouch! That's gotta hurt. Lives remaining: ${lives}.`,
+            `Watch out! You've lost a life. ${lives} left.`,
+            `Close call! You have ${lives} lives remaining.`,
+            `Shields down! ${lives} lives left. Stay focused!`
+        ];
+        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+        updateCommentary(`${randomMessage}`, COMMENTARY_PRIORITY.LOSE_LIFE, "LOSE_LIFE");
     }
 }
 
@@ -579,25 +588,6 @@ function restartGame() {
         
         // Re-enable settings icon
         document.getElementById('settings-icon').style.pointerEvents = 'auto';
-    }
-}
-
-
-function loseLife() {
-    lives--;
-    if (lives <= 0) {
-        gameOver();
-    } else {
-        resetPlayerPosition();
-        invulnerableUntil = Date.now() + INVULNERABILITY_DURATION;
-        const messages = [
-            `Ouch! That's gotta hurt. Lives remaining: ${lives}.`,
-            `Watch out! You've lost a life. ${lives} left.`,
-            `Close call! You have ${lives} lives remaining.`,
-            `Shields down! ${lives} lives left. Stay focused!`
-        ];
-        const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-        updateCommentary(`${randomMessage}`, COMMENTARY_PRIORITY.LOSE_LIFE, "LOSE_LIFE");
     }
 }
 
