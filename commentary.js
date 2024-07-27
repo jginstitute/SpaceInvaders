@@ -9,18 +9,18 @@ let currentSpeechPriority = 0;
 
 // Commentary priorities
 const COMMENTARY_PRIORITY = {
-    GAME_START: 9,
-    GAME_OVER: 10,
     GAME_RESTART: 2,
-    LOSE_LIFE: 8,
+    ALIEN_DESTROYED_NORMAL: 2,
+    ALIEN_DESTROYED_TOUGH: 3,
     POWERUP_APPEAR: 6,
     POWERUP_COLLECT_RAPID_FIRE: 7,
     POWERUP_COLLECT_SHIELD: 7,
-    ALIEN_DESTROYED_NORMAL: 2,
-    ALIEN_DESTROYED_TOUGH: 3,
+    POWERUP_DESTROYED: 7,
+    LOSE_LIFE: 8,
     LEVEL_UP: 8,
     GAIN_LIFE: 8,
-    POWERUP_DESTROYED: 7
+    GAME_START: 9,
+    GAME_OVER: 10
 };
 
 function initCommentary() {
