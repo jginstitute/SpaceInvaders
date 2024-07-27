@@ -113,6 +113,7 @@ function init() {
     canvas.height = 600;
 
     gameState = GAME_STATE.START;
+    document.getElementById('start-screen').style.display = 'block';
 
     // Initialize audio elements
     shootSound = document.getElementById('shoot-sound');
@@ -557,6 +558,13 @@ function handleKeyDown(e) {
     if (e.code === 'Escape') {
         togglePause();
     }
+    if (e.code === 'Space') {
+        if (gameState === GAME_STATE.START) {
+            startGame();
+        } else if (gameState === GAME_STATE.GAME_OVER) {
+            restartGame();
+        }
+    }
 }
 
 function handleKeyUp(e) {
@@ -602,13 +610,15 @@ function handleMouseLeave() {
 
 // Game state functions
 function startGame() {
-    gameState = GAME_STATE.PLAYING;
-    document.getElementById('start-screen').style.display = 'none';
-    canvas.style.cursor = 'none';
-    
-    // Spawn enemies when the game starts
-    spawnEnemies();
-    updateCommentary("Game started! Good luck, pilot!", COMMENTARY_PRIORITY.GAME_START, "GAME_START");
+    if (gameState === GAME_STATE.START) {
+        gameState = GAME_STATE.PLAYING;
+        document.getElementById('start-screen').style.display = 'none';
+        canvas.style.cursor = 'none';
+        
+        // Spawn enemies when the game starts
+        spawnEnemies();
+        updateCommentary("Game started! Good luck, pilot!", COMMENTARY_PRIORITY.GAME_START, "GAME_START");
+    }
 }
 
 function gameOver() {
@@ -621,18 +631,20 @@ function gameOver() {
 }
 
 function restartGame() {
-    gameState = GAME_STATE.PLAYING;
-    document.getElementById('game-over-screen').style.display = 'none';
-    // Reset game variables and start a new game
-    score = 0;
-    level = 1;
-    lives = 3;
-    enemies = [];
-    bullets = [];
-    powerUps = [];
-    resetPlayerPosition();
-    spawnEnemies();
-    updateCommentary("Game restarted! Let's try again!", COMMENTARY_PRIORITY.GAME_RESTART, "GAME_RESTART");
+    if (gameState === GAME_STATE.GAME_OVER) {
+        gameState = GAME_STATE.PLAYING;
+        document.getElementById('game-over-screen').style.display = 'none';
+        // Reset game variables and start a new game
+        score = 0;
+        level = 1;
+        lives = 3;
+        enemies = [];
+        bullets = [];
+        powerUps = [];
+        resetPlayerPosition();
+        spawnEnemies();
+        updateCommentary("Game restarted! Let's try again!", COMMENTARY_PRIORITY.GAME_RESTART, "GAME_RESTART");
+    }
 }
 
 function loseLife() {
