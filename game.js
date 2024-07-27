@@ -20,7 +20,7 @@ import { initCommentary, updateCommentary, COMMENTARY_PRIORITY } from './comment
 // Settings
 let isSettingsOpen = false;
 let previousGameState;
-let commentaryStyle = 'trashtalk';
+export let commentaryStyle = 'trashtalk';
 
 // Alien destruction commentary variations have been moved to commentary.js
 

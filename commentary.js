@@ -1,3 +1,5 @@
+import { commentaryStyle } from './game.js';
+
 // Commentary
 let commentaryElement, speechOutput;
 let lastCommentaryTime = 0;
