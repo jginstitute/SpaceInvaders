@@ -25,6 +25,7 @@ let currentSpeechPriority = 0;
 // Settings
 let isSettingsOpen = false;
 let previousGameState;
+let commentaryStyle = 'trashtalk';
 
 // Commentary priorities
 const COMMENTARY_PRIORITY = {
@@ -146,6 +147,7 @@ function init() {
     // Settings
     document.getElementById('settings-icon').addEventListener('click', toggleSettingsPanel);
     document.getElementById('voice-select').addEventListener('change', updateSelectedVoice);
+    document.getElementById('commentary-style').addEventListener('change', updateCommentaryStyle);
     document.getElementById('close-settings').addEventListener('click', toggleSettingsPanel);
 
     // Populate voice options
@@ -196,6 +198,10 @@ let selectedVoice = 'random';
 
 function updateSelectedVoice() {
     selectedVoice = document.getElementById('voice-select').value;
+}
+
+function updateCommentaryStyle() {
+    commentaryStyle = document.getElementById('commentary-style').value;
 }
 
 // Main game loop
@@ -697,14 +703,15 @@ function updateCommentary(message, priority = 0, eventSpecification = '') {
     const tookPriority = priority > currentSpeechPriority ? "Priority YES" : "Priority NO";
     
     if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN || priority > currentSpeechPriority) {
-        commentaryElement.textContent = message;
+        const finalMessage = commentaryStyle === 'trashtalk' ? getTrashtalkMessage(eventSpecification) : message;
+        commentaryElement.textContent = finalMessage;
         lastCommentaryTime = currentTime;
         
         // Log the commentary event
-        console.log(`${new Date().toISOString()}, ${priority}, TTS NO, ${tookPriority}, ${eventSpecification}, "${message}"`);
+        console.log(`${new Date().toISOString()}, ${priority}, TTS NO, ${tookPriority}, ${eventSpecification}, "${finalMessage}"`);
         
         // Text-to-speech
-        speakMessage(message, priority, eventSpecification);
+        speakMessage(finalMessage, priority, eventSpecification);
     }
 }
 
@@ -740,6 +747,26 @@ function speakMessage(message, priority, eventSpecification) {
             console.log(`${new Date().toISOString()}, ${priority}, TTS YES, ${tookPriority}, ${eventSpecification}, "${message}", Voice: ${utterance.voice ? utterance.voice.name : 'Default'}`);
         }
     }
+}
+
+function getTrashtalkMessage(eventSpecification) {
+    const trashTalkMessages = {
+        GAME_START: ["Oh look, another human thinks they can beat us. How cute!", "Ready to lose, Earthling?", "Prepare for humiliation, puny human!"],
+        GAME_OVER: ["Game over already? I was just warming up!", "Back to your mom's basement, loser!", "Did you even try? Pathetic!"],
+        GAME_RESTART: ["Back for more punishment? I admire your masochism!", "Round 2 of your embarrassment begins now!", "Let's see how quickly you fail this time!"],
+        LOSE_LIFE: ["Oops! Did that hurt? Too bad!", "One step closer to total failure!", "Your ship looks better with some holes in it!"],
+        POWERUP_APPEAR: ["A power-up! Too bad you're too slow to get it!", "Oh look, false hope has appeared!", "Here's something you'll never reach!"],
+        POWERUP_COLLECT_RAPID_FIRE: ["Rapid fire? More like rapid failure!", "Great, now you can miss us faster!", "Ooh, scary! ...Not."],
+        POWERUP_COLLECT_SHIELD: ["Hide behind that shield, coward!", "A shield won't save you from inevitable doom!", "Prolonging the inevitable, are we?"],
+        ALIEN_DESTROYED_NORMAL: ["You got lucky, punk!", "One down, still no chance of winning!", "Enjoy that small victory. It's all you'll get!"],
+        ALIEN_DESTROYED_TOUGH: ["Oh no, you destroyed our tough alien! ...Said no one ever.", "Congrats, you've achieved the bare minimum!", "Don't get cocky, that was our intern!"],
+        LEVEL_UP: ["Higher level, higher failure rate for you!", "Ooh, things are getting serious now... Not!", "Ready for more embarrassment?"],
+        GAIN_LIFE: ["Another life? Prolonging your suffering, I see.", "Great, more chances for us to destroy you!", "Oh good, I was worried we'd run out of lives to take!"],
+        POWERUP_DESTROYED: ["Nice shot! ...On your own power-up, idiot!", "Destroying your own power-ups now? Clever strategy!", "Thanks for making our job easier!"]
+    };
+
+    const messages = trashTalkMessages[eventSpecification] || ["Wow, you're still playing? Impressive dedication to failure!"];
+    return messages[Math.floor(Math.random() * messages.length)];
 }
 
 // Initialize the game when the window loads
