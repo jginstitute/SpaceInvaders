@@ -1,0 +1,17 @@
+this is the original prioritiers
+
+// Commentary priorities
+const COMMENTARY_PRIORITY = {
+    ALIEN_DESTROYED_NORMAL: 2,
+    ALIEN_DESTROYED_TOUGH: 3,
+    POWERUP_APPEAR: 6,
+    POWERUP_COLLECT_RAPID_FIRE: 7,
+    POWERUP_COLLECT_SHIELD: 7,
+    POWERUP_DESTROYED: 7,
+    LOSE_LIFE: 8,
+    LEVEL_UP: 8,
+    GAIN_LIFE: 8,
+    GAME_START: 10,
+    GAME_RESTART: 10,
+    GAME_OVER: 10
+};
