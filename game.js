@@ -144,7 +144,6 @@ function init() {
     document.addEventListener('keyup', handleKeyUp);
     document.getElementById('start-button').addEventListener('click', startGame);
     document.getElementById('restart-button').addEventListener('click', restartGame);
-    document.getElementById('close-game-over').addEventListener('click', closeGameOver);
     canvas.addEventListener('mouseenter', handleMouseEnter);
     canvas.addEventListener('mouseleave', handleMouseLeave);
 
@@ -648,11 +647,6 @@ function restartGame() {
     }
 }
 
-function closeGameOver() {
-    document.getElementById('game-over-screen').style.display = 'none';
-    gameState = GAME_STATE.START;
-    document.getElementById('start-screen').style.display = 'block';
-}
 
 function loseLife() {
     lives--;
