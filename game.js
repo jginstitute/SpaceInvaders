@@ -509,18 +509,20 @@ function togglePause() {
         lastCommentaryBeforePause = document.getElementById('commentary').textContent;
         updateCommentary("Game paused. Press ESC to resume.", COMMENTARY_PRIORITY.GAME_PAUSED, "GAME_PAUSED");
         if ('speechSynthesis' in window) {
-            speechWasCancelled = speechSynthesis.speaking;
-            speechSynthesis.cancel(); // Cancel any ongoing TTS
+            if (speechSynthesis.speaking) {
+                speechWasCancelled = true;
+                speechSynthesis.cancel(); // Cancel any ongoing TTS
+            }
         }
     } else if (gameState === GAME_STATE.PAUSED) {
         gameState = GAME_STATE.PLAYING;
         document.getElementById('game-container').removeChild(pauseMessage);
         if (speechWasCancelled) {
-            updateCommentary(lastCommentaryBeforePause, COMMENTARY_PRIORITY.GAME_RESUMED, "GAME_RESUMED", true);
+            updateCommentary(lastCommentaryBeforePause, COMMENTARY_PRIORITY.GAME_RESUMED, "GAME_RESUMED");
+            speechWasCancelled = false;
         } else {
-            updateCommentary("Game resumed. Good luck!", COMMENTARY_PRIORITY.GAME_RESUMED, "GAME_RESUMED", true);
+            updateCommentary("Game resumed. Good luck!", COMMENTARY_PRIORITY.GAME_RESUMED, "GAME_RESUMED");
         }
-        speechWasCancelled = false;
         animationFrameId = requestAnimationFrame(update);
     }
 }

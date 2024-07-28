@@ -28,11 +28,11 @@ function initCommentary() {
     speechOutput = document.getElementById('speech-output');
 }
 
-function updateCommentary(message, priority = 0, eventSpecification = '', forceSpeak = false) {
+function updateCommentary(message, priority = 0, eventSpecification = '') {
     const currentTime = Date.now();
     const tookPriority = priority > currentSpeechPriority ? "Priority YES" : "Priority NO";
     
-    if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN || priority > currentSpeechPriority || forceSpeak) {
+    if (currentTime - lastCommentaryTime >= COMMENTARY_COOLDOWN || priority > currentSpeechPriority) {
         const finalMessage = commentaryStyle === 'trashtalk' ? getTrashtalkMessage(eventSpecification) : message;
         commentaryElement.textContent = finalMessage;
         lastCommentaryTime = currentTime;
@@ -46,15 +46,15 @@ function updateCommentary(message, priority = 0, eventSpecification = '', forceS
         }
         
         // Text-to-speech
-        speakMessage(finalMessage, priority, eventSpecification, forceSpeak);
+        speakMessage(finalMessage, priority, eventSpecification);
     }
 }
 
-function speakMessage(message, priority, eventSpecification, forceSpeak = false) {
+function speakMessage(message, priority, eventSpecification) {
     if ('speechSynthesis' in window) {
         const tookPriority = priority >= currentSpeechPriority ? "Priority YES" : "Priority NO";
         
-        if (priority > currentSpeechPriority || forceSpeak) {
+        if (priority > currentSpeechPriority) {
             speechSynthesis.cancel(); // Stop any ongoing speech
             isSpeaking = false;
             
