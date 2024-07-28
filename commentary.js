@@ -40,6 +40,11 @@ function updateCommentary(message, priority = 0, eventSpecification = '') {
         // Log the commentary event
         console.log(`${new Date().toISOString()}, ${priority}, TTS NO, ${tookPriority}, ${eventSpecification}, "${finalMessage}"`);
         
+        // Reset speech synthesis before speaking new message
+        if ('speechSynthesis' in window) {
+            speechSynthesis.cancel();
+        }
+        
         // Text-to-speech
         speakMessage(finalMessage, priority, eventSpecification);
     }
