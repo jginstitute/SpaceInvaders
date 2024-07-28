@@ -1,7 +1,7 @@
 // Game variables
 let canvas, ctx;
 let player, enemies, bullets, powerUps;
-let gameLoop, gameState;
+let gameLoop, gameState, animationFrameId;
 let score = 0;
 let level = 1;
 let lives = 3;
@@ -86,7 +86,7 @@ function init() {
     populateVoiceOptions();
 
     // Start the game loop
-    gameLoop = requestAnimationFrame(update);
+    animationFrameId = requestAnimationFrame(update);
 }
 
 // Settings functions
@@ -166,11 +166,9 @@ function update() {
         document.getElementById('score').textContent = `Score: ${score}`;
         document.getElementById('level').textContent = `Level: ${level}`;
         document.getElementById('lives').textContent = `Lives: ${lives}`;
-
-        gameLoop = requestAnimationFrame(update);
-    } else {
-        gameLoop = requestAnimationFrame(update);
     }
+    
+    animationFrameId = requestAnimationFrame(update);
 }
 
 // Game object update functions
@@ -503,13 +501,14 @@ function handleKeyUp(e) {
 function togglePause() {
     if (gameState === GAME_STATE.PLAYING) {
         gameState = GAME_STATE.PAUSED;
+        cancelAnimationFrame(animationFrameId);
         pauseMessage = createPauseMessage();
         updateCommentary("Game paused. Press ESC to resume.", COMMENTARY_PRIORITY.GAME_PAUSED, "GAME_PAUSED");
     } else if (gameState === GAME_STATE.PAUSED) {
         gameState = GAME_STATE.PLAYING;
         document.getElementById('game-container').removeChild(pauseMessage);
         updateCommentary("Game resumed. Good luck!", COMMENTARY_PRIORITY.GAME_RESUMED, "GAME_RESUMED");
-        gameLoop = requestAnimationFrame(update);
+        animationFrameId = requestAnimationFrame(update);
     }
 }
 
