@@ -504,9 +504,6 @@ function togglePause() {
         cancelAnimationFrame(animationFrameId);
         pauseMessage = createPauseMessage();
         updateCommentary("Game paused. Press ESC to resume.", COMMENTARY_PRIORITY.GAME_PAUSED, "GAME_PAUSED");
-        if ('speechSynthesis' in window) {
-            speechSynthesis.cancel(); // Cancel any ongoing TTS
-        }
     } else if (gameState === GAME_STATE.PAUSED) {
         gameState = GAME_STATE.PLAYING;
         document.getElementById('game-container').removeChild(pauseMessage);
